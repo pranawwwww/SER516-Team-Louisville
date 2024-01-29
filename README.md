@@ -11,8 +11,8 @@ This project is a Java application for interacting with the Taiga API to perform
 
 
    ```bash
-   git clone https://github.com/ser516asu/SER516-Team-Boston.git
-   cd SER516-Team-Boston
+   git clone https://github.com/ser516asu/SER516-Team-Louisville.git
+   cd SER516-Team-Louisville
    ```
 
 ### 2) Compile and Run the application
