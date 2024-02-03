@@ -51,7 +51,7 @@ public class Tasks {
         return LocalDateTime.parse(dateTimeString, formatter);
     }
 
-    private static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
+    static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
         int cycleTime = 0;
         int closedTasks = 0;
 
@@ -73,6 +73,7 @@ public class Tasks {
 
     public static List<Integer> getTaskHistory(List<JsonNode> tasks, String authToken, String TAIGA_API_ENDPOINT) {
         List<Integer> result = new ArrayList<>(List.of(0, 0));
+
 
         for (JsonNode task : tasks) {
             int taskId = task.get("id").asInt();
