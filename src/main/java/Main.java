@@ -62,6 +62,7 @@ public class Main {
                             "(3) Calculate average lead time\n" +
                             "(4) Calculate average cycle time\n" +
                             "(5) Exit\n" +
+                            "(6) Get Milestone List\n"+
                             "Enter action: ");
 
             switch (action) {
@@ -92,6 +93,11 @@ public class Main {
                 case "5":
                     System.out.println("Exiting...");
                     return;
+
+                case "6":
+                    System.out.println("Getting Milestone details");
+                    Sprint.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectId);
+                    break;
 
                 default:
                     System.out.println("Invalid choice. Please enter a valid option.");
