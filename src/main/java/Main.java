@@ -21,6 +21,7 @@ public class Main {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     public static void main(String[] args) {
+        AuthenticationGUI.launch(AuthenticationGUI.class,args);
         Scanner scanner = new Scanner(System.in);
         // Prompting user for Taiga's username and password
         String taigaUsername = promptUser("Enter your Taiga username: ");
