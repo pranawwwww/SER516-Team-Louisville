@@ -31,11 +31,11 @@ public class Main {
             System.out.println("Authentication successful.");
 
             // Calling Taiga API to get project details
-            int projectId = Project.getProjectId(authToken,TAIGA_API_ENDPOINT);
+//            int projectId = Project.getProjectId(authToken,TAIGA_API_ENDPOINT,Project.);
 
-            if (projectId != -1) {
-                handleUserAction(projectId, authToken, scanner);
-            }
+//            if (projectId != -1) {
+//                handleUserAction(projectId, authToken, scanner);
+//            }
         }
     }
 
