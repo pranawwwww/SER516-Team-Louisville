@@ -21,23 +21,42 @@ public class Main {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     public static void main(String[] args) {
-        AuthenticationGUI.launch(AuthenticationGUI.class,args);
-        Scanner scanner = new Scanner(System.in);
-        // Prompting user for Taiga's username and password
-        String taigaUsername = promptUser("Enter your Taiga username: ");
-        String taigaPassword = promptUserPassword("Enter your Taiga password: ");
-        String authToken = Authentication.authenticate(taigaUsername, taigaPassword);
 
-        if (authToken != null) {
-            System.out.println("Authentication successful.");
+        while(true){
+            String choice = promptUser("enter choice:\n"+
+            "(1) Launch GUI\n"+
+            "(2)Launch CLI\n"+
+            "(3)exit\n");
+            switch (choice) {
+                case "1":
+                    AuthenticationGUI.launch(AuthenticationGUI.class,args);
+                case "2":
+                    // Prompting user for Taiga's username and password
+                    String taigaUsername = promptUser("Enter your Taiga username: ");
+                    String taigaPassword = promptUserPassword("Enter your Taiga password: ");
+                    String authToken = Authentication.authenticate(taigaUsername, taigaPassword);
+                    if (authToken != null) {
+                        System.out.println("Authentication successful.");
+                             
+                    String projectSlug = promptUser("Enter the Taiga project slug: ");
+                    // Calling Taiga API to get project details
+                    int projectId = Project.getProjectId(authToken,TAIGA_API_ENDPOINT, projectSlug);
 
-            // Calling Taiga API to get project details
-//            int projectId = Project.getProjectId(authToken,TAIGA_API_ENDPOINT,Project.);
+                    if (projectId != -1) {
+                        handleUserAction(projectId, authToken, scanner);
+                        }
+                    }
+                case "3":
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
 
-//            if (projectId != -1) {
-//                handleUserAction(projectId, authToken, scanner);
-//            }
+            }
         }
+        
+        
+
     }
 
     private static String promptUser(String prompt) {
@@ -62,12 +81,11 @@ public class Main {
                             "(1) Show open user stories\n" +
                             "(2) Calculate number of tasks closed per week metric\n" +
                             "(3) Calculate average lead time\n" +
-                            "(4) Calculate lead time per user story\n" +
-                            "(5) Visualize cycle time chart\n" +
-
-                            "(6) Fetch Sprint details for burndown\n" +
-
-                            "(7) Exit\n" +
+                            "(4) Calculate average cycle time\n" +
+                            "(5) Calculate lead time per user story\n" +
+                            "(6) Calculate cycle time per user story\n" +
+                            "(7) Fetch Sprint details for burndown\n" +
+                            "(8) Exit\n" +
                             "Enter action: ");
 
             switch (action) {
@@ -90,22 +108,26 @@ public class Main {
                     getLeadTime(projectId, authToken);
                     break;
                 case "4":
+                    System.out.println("Calculating average cycle time...");
+                    getCycleTime(projectId, authToken);
+                    break;
+                case "5":
                     System.out.println("Calculate and display lead time per user story...") ;
                     System.out.println(LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT ));
                     break;
 
-                case "5":
+                case "6":
                     System.out.println("Calculating cycle time of each user stories...");
                     CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
                     break;
                 
-                 case "6":
+                case "7":
 
                     System.out.println("Fetching Sprint details for burndown...");
                     fetchSprintDetails(projectId,authToken);
                     break;
 
-                case "7":
+                case "8":
                     System.out.println("Exiting...");
                     return;
 
