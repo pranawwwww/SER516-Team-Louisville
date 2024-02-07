@@ -2,10 +2,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -44,10 +41,15 @@ public class AuthenticationGUI  extends Application {
             String pass=passwordField.getText();
             //Integration with Authentication.java
             String auth =Authentication.authenticate(username,pass);
-            if(auth!=null){
-                message.setText("Login SuccessFul!");
+            if(auth==null){
+                Alert alert=new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Authentication Failed!!");
+                alert.setHeaderText(null);
+                alert.setContentText("Authentication Failed, Please Try Again!");
+                alert.showAndWait();
             } else {
-                message.setText("Login Failed!");
+                primaryStage.hide();
+                DisplayPage.display(auth, DisplayPage.SlugURLHandler);
             }
         });
         Scene scene=new Scene(gridPane,300,275);
