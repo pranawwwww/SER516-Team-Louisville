@@ -61,8 +61,9 @@ public class Main {
                             "(1) Show open user stories\n" +
                             "(2) Calculate number of tasks closed per week metric\n" +
                             "(3) Calculate average lead time\n" +
-                            "(4) Calculate average cycle time\n" +
-                            "(5) Exit\n" +
+                            "(4) Calculate lead time per user story\n" +
+                            "(5) Calculate average cycle time\n" +
+                            "(6) Exit\n" +
                             "Enter action: ");
 
             switch (action) {
@@ -84,13 +85,17 @@ public class Main {
                     System.out.println("Calculating average lead time...");
                     getLeadTime(projectId, authToken);
                     break;
-
                 case "4":
+                    System.out.println("Calculate and display lead time per user story...") ;
+                    System.out.println(LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT ));
+                    break;   
+
+                case "5":
                     System.out.println("Calculating average cycle time...");
                     getCycleTime(projectId, authToken);
                     break;
 
-                case "5":
+                case "6":
                     System.out.println("Exiting...");
                     return;
 
