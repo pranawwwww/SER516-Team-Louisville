@@ -27,6 +27,7 @@ public class Main {
         String taigaUsername = promptUser("Enter your Taiga username: ");
         String taigaPassword = promptUserPassword("Enter your Taiga password: ");
         String authToken = Authentication.authenticate(taigaUsername, taigaPassword);
+
         if (authToken != null) {
             System.out.println("Authentication successful.");
 
@@ -62,7 +63,7 @@ public class Main {
                             "(2) Calculate number of tasks closed per week metric\n" +
                             "(3) Calculate average lead time\n" +
                             "(4) Calculate lead time per user story\n" +
-                            "(5) Calculate average cycle time\n" +
+                            "(5) Visualize cycle time chart\n" +
                             "(6) Exit\n" +
                             "Enter action: ");
 
@@ -91,8 +92,8 @@ public class Main {
                     break;   
 
                 case "5":
-                    System.out.println("Calculating average cycle time...");
-                    getCycleTime(projectId, authToken);
+                    System.out.println("Calculating cycle time of each user stories...");
+                    CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
                     break;
 
                 case "6":
@@ -215,7 +216,6 @@ public class Main {
         System.out.println("Average Cycle Time: " + avgCycleTime);
         System.out.println("\n***********************************\n");
     }
-
 
 
 }
