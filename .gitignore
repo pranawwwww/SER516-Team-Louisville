@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+#Intellij File
+*.idea
+
+#Target folder
+*.target
+
 # Log file
 *.log
 
@@ -22,3 +28,10 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# target Folder
+target/
+
+# ignore files related to IDE
+.vscode/
+.idea/
