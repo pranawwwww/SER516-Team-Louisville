@@ -22,20 +22,6 @@ public class Burndown {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-    private static String promptUser(String prompt) {
-        System.out.print(prompt);
-        return scanner.nextLine();
-    }
-
-    private static String promptUserPassword(String prompt) {
-        if (System.console() != null) {
-            char[] passwordChars = System.console().readPassword(prompt);
-            return new String(passwordChars);
-        } else {
-            System.out.print(prompt);
-            return scanner.nextLine();
-        }
-    }
 
     public static String promptSprint(String prompt){
         System.out.print(prompt);
