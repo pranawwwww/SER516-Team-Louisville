@@ -64,7 +64,8 @@ public class Main {
                             "(3) Calculate average lead time\n" +
                             "(4) Calculate lead time per user story\n" +
                             "(5) Visualize cycle time chart\n" +
-                            "(6) Exit\n" +
+                            "(6) Fetch Sprint details for burndown\n" +
+                            "(7) Exit\n" +
                             "Enter action: ");
 
             switch (action) {
@@ -89,7 +90,7 @@ public class Main {
                 case "4":
                     System.out.println("Calculate and display lead time per user story...") ;
                     System.out.println(LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT ));
-                    break;   
+                    break;
 
                 case "5":
                     System.out.println("Calculating cycle time of each user stories...");
@@ -97,6 +98,11 @@ public class Main {
                     break;
 
                 case "6":
+                    System.out.println("Fetching Sprint details for burndown...");
+                    fetchSprintDetails(projectId,authToken);
+                    break;
+
+                case "7":
                     System.out.println("Exiting...");
                     return;
 
@@ -217,5 +223,12 @@ public class Main {
         System.out.println("\n***********************************\n");
     }
 
+    private static void fetchSprintDetails(int projectId, String authToken) {
+        String sprint = Burndown.promptSprint("Enter the sprint: ");
+        List<JsonNode> statsList = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        for(JsonNode jn : statsList){
+            System.out.println(jn);
+        }
+    }
 
 }
