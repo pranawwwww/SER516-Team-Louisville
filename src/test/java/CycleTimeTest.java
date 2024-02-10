@@ -1,30 +1,51 @@
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 
-class Pair<T, U> {
-    public final T key;
-    public final U value;
-    public Pair(T key, U value) {
-        this.key = key;
-        this.value = value;
-    }
-}
+
+//TODO: The tests are currently placeholders, need more work done
+
 class CycleTimeTest {
-    CycleTime ct =  new CycleTime();
+
     @Test
-    void testCycleTimeMatrix1(){
-        List<Pair<String, Integer>> result = ct.getMatrixData(1521720,"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA2OTM1MTk0LCJqdGkiOiI2MDljZWIxMmQxNTc0ZjI2OWViNzI0MTVmMGMzYjgwMCIsInVzZXJfaWQiOjYxNzI0MH0.drrpLEIKvOmfnzE4rTBXJRcc5aIzDH6GpCByWWnfAPa_vS0GfgbrxWgKur87UjpBMXjB0xvnwDFnyUN1PWYVo1VXggm2Hi03toPIkhjVtEyXE_EdrT5633wNkTIQwGOUJEi73A4ZO_U0iBMovkWvn-4KzS1LZhN0DzUImpOIwqfTS6lEHlV7tCraYwqPZJv9pXh5efX-CKaCMSTZBsfpz5ERtDM3eHWYQk1QK1OC8v7_c4X-ZvnChO1mD5VwXWhVsqf9LCPtl-w5VFWp_wNC7CFFcOaWPPzc6vJnx3lcb6713w4z_Ft1GvvItXKqJtNJs324dj0qMWm0s6ZqNatSaw","https://api.taiga.io/api/v1");
-        List<Pair<String, Integer>> expected  = new ArrayList<Pair<String, Integer>>();
-        assertEquals(expected,result);
+    void testGetCycleTimePerTask() {
+        // Mock the static method in Tasks class
+        try (MockedStatic<Tasks> mockedTasks = Mockito.mockStatic(Tasks.class)) {
+            // Mock response from getClosedTasks
+            List<JsonNode> closedTasks = createMockClosedTasks();
+
+            // Mocking the static method call
+            mockedTasks.when(() -> Tasks.getClosedTasks(anyInt(), anyString(), anyString())).thenReturn(closedTasks);
+
+            // Call the method to be tested
+            Map<String, Long> cycleTimeMap = LeadTime.getLeadTimePerTask(123, "token", "endpoint");
+
+            // Assertions
+            assertEquals(2, cycleTimeMap.size());
+            assertEquals(4, cycleTimeMap.get("1"));
+            assertEquals(0, cycleTimeMap.get("2"));
+        }
     }
-    @Test
-    void testCycleTimeMatrix2(){
-        List<Pair<String, Integer>> result = ct.getMatrixData(435060,"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA2OTM1NjU1LCJqdGkiOiI4ZmI5NTQ4MzQwOTg0Zjc1OWRmNGVlYmIwZmVjYWQwZSIsInVzZXJfaWQiOjYxNzI0MH0.ayTYsaNUifNelg8bOjYSVmTGRXlK0z_mydhq70qJ1HS3dBS2XC9c2S2EOVigIxwH-bXvPKbwLHs1R3RRVWEKffCkDi3B7YeYP68uhDP8rPlZAdDILmpPYxUwtb3byGB3ClR6fgF4MqrT1iCZEazsCbA3pyHJj-sEOlpiQncKzCvJmoGzWLWHqRFI9n9sLWJ6L8g_e3a_zPcnejyyPTHSggLAQZa6v7B6qLZnpKYd0EvrpYflRXe08R-GKRJ2Ft2Z5hGPrGKPxJ_QPP9fXp61jocyBFVFmqHi_UVh9DYj3tu9eZEA5Re7WdcoDTg9fXPJyQ8fAQPellq5ZYrwfANdUA","https://api.taiga.io/api/v1");
-        List<Pair<String, Integer>> expected  = new ArrayList<Pair<String, Integer>>();
-        assertEquals(expected,result);
+
+    // Helper method to create a mock list of closed tasks
+    private List<JsonNode> createMockClosedTasks() {
+        JsonNode task1 = createMockTask("4", "2024-01-31T10:00:00.000Z", "2024-02-03T15:30:00.000Z");
+        JsonNode task2 = createMockTask("0", "2024-02-04T12:00:00.000Z", "2024-02-04T14:45:00.000Z");
+        return List.of(task1, task2);
+    }
+
+    // Helper method to create a mock task
+    private JsonNode createMockTask(String id, String startDate, String finishedDate) {
+        JsonNode mockJsonNode = mock(JsonNode.class);
+        return mockJsonNode;
     }
 }
