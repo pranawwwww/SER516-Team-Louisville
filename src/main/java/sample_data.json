@@ -1,0 +1,798 @@
+[
+    {
+        "project": 1521720,
+        "project_extra_info": {
+            "name": "SER516-Team-Louisville",
+            "slug": "ser516asu-ser516-team-louisville",
+            "logo_small_url": null,
+            "id": 1521720
+        },
+        "id": 376641,
+        "name": "Sprint 5",
+        "slug": "sprint-5-3546",
+        "owner": 501364,
+        "estimated_start": "2024-04-08",
+        "estimated_finish": "2024-04-21",
+        "created_date": "2024-01-29T21:29:56.835Z",
+        "modified_date": "2024-01-29T21:29:56.878Z",
+        "closed": false,
+        "disponibility": 0.0,
+        "order": 1,
+        "user_stories": [],
+        "total_points": null,
+        "closed_points": null
+    },
+    {
+        "project": 1521720,
+        "project_extra_info": {
+            "name": "SER516-Team-Louisville",
+            "slug": "ser516asu-ser516-team-louisville",
+            "logo_small_url": null,
+            "id": 1521720
+        },
+        "id": 376640,
+        "name": "Sprint 4",
+        "slug": "sprint-4-5681",
+        "owner": 501364,
+        "estimated_start": "2024-03-25",
+        "estimated_finish": "2024-04-07",
+        "created_date": "2024-01-29T21:29:41.200Z",
+        "modified_date": "2024-01-29T21:29:41.246Z",
+        "closed": false,
+        "disponibility": 0.0,
+        "order": 1,
+        "user_stories": [],
+        "total_points": null,
+        "closed_points": null
+    },
+    {
+        "project": 1521720,
+        "project_extra_info": {
+            "name": "SER516-Team-Louisville",
+            "slug": "ser516asu-ser516-team-louisville",
+            "logo_small_url": null,
+            "id": 1521720
+        },
+        "id": 376639,
+        "name": "Sprint 3",
+        "slug": "sprint-3-8371",
+        "owner": 501364,
+        "estimated_start": "2024-03-11",
+        "estimated_finish": "2024-03-24",
+        "created_date": "2024-01-29T21:29:23.957Z",
+        "modified_date": "2024-01-29T21:29:24.204Z",
+        "closed": false,
+        "disponibility": 0.0,
+        "order": 1,
+        "user_stories": [],
+        "total_points": null,
+        "closed_points": null
+    },
+    {
+        "project": 1521720,
+        "project_extra_info": {
+            "name": "SER516-Team-Louisville",
+            "slug": "ser516asu-ser516-team-louisville",
+            "logo_small_url": null,
+            "id": 1521720
+        },
+        "id": 376638,
+        "name": "Sprint 2",
+        "slug": "sprint-2-11429",
+        "owner": 501364,
+        "estimated_start": "2024-02-12",
+        "estimated_finish": "2024-02-25",
+        "created_date": "2024-01-29T21:28:29.593Z",
+        "modified_date": "2024-01-29T21:28:29.638Z",
+        "closed": false,
+        "disponibility": 0.0,
+        "order": 1,
+        "user_stories": [],
+        "total_points": null,
+        "closed_points": null
+    },
+    {
+        "project": 1521720,
+        "project_extra_info": {
+            "name": "SER516-Team-Louisville",
+            "slug": "ser516asu-ser516-team-louisville",
+            "logo_small_url": null,
+            "id": 1521720
+        },
+        "id": 376636,
+        "name": "Sprint 1",
+        "slug": "sprint-1-7319",
+        "owner": 501364,
+        "estimated_start": "2024-01-29",
+        "estimated_finish": "2024-02-11",
+        "created_date": "2024-01-29T21:23:25.162Z",
+        "modified_date": "2024-01-29T21:23:25.206Z",
+        "closed": false,
+        "disponibility": 0.0,
+        "order": 1,
+        "user_stories": [
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": 525706,
+                "assigned_to_extra_info": {
+                    "username": "abakliw1",
+                    "full_name_display": "Akshat Bakliwal",
+                    "photo": null,
+                    "big_photo": null,
+                    "gravatar_id": "852afa289c2c86989bf1b4d77ca229d0",
+                    "is_active": true,
+                    "id": 525706
+                },
+                "status": 9157395,
+                "status_extra_info": {
+                    "name": "In progress",
+                    "color": "#E47C40",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468101,
+                "ref": 4,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:02:14.431Z",
+                "modified_date": "2024-02-03T00:03:54.603Z",
+                "finish_date": null,
+                "subject": "Select a Taiga project to apply this metric to.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 7,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562134431043,
+                "sprint_order": 1,
+                "kanban_order": 1706918634598817,
+                "epics": [
+                    {
+                        "id": 218039,
+                        "ref": 1,
+                        "subject": "Burndown chart",
+                        "color": "#51D381",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295657
+                },
+                "total_points": 2.0
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": 620710,
+                "assigned_to_extra_info": {
+                    "username": "ashishthanga22",
+                    "full_name_display": "Ashish Thanga",
+                    "photo": null,
+                    "big_photo": null,
+                    "gravatar_id": "52c563f4298d6e0083ccdbf4d57ce1ce",
+                    "is_active": true,
+                    "id": 620710
+                },
+                "status": 9157395,
+                "status_extra_info": {
+                    "name": "In progress",
+                    "color": "#E47C40",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468119,
+                "ref": 5,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:04:36.341Z",
+                "modified_date": "2024-02-02T23:50:44.453Z",
+                "finish_date": null,
+                "subject": "Configure the metric parameters",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 5,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562276341490,
+                "sprint_order": 2,
+                "kanban_order": 1706917844449275,
+                "epics": [
+                    {
+                        "id": 218039,
+                        "ref": 1,
+                        "subject": "Burndown chart",
+                        "color": "#51D381",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295657
+                },
+                "total_points": 2.0
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": 525690,
+                "assigned_to_extra_info": {
+                    "username": "harshithakarur",
+                    "full_name_display": "Harshitha Karur ",
+                    "photo": null,
+                    "big_photo": null,
+                    "gravatar_id": "271d8a220df904a5c40b76d9b34562f0",
+                    "is_active": true,
+                    "id": 525690
+                },
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468128,
+                "ref": 6,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:05:35.749Z",
+                "modified_date": "2024-01-30T23:25:28.673Z",
+                "finish_date": null,
+                "subject": "Get the data and compute the metric raw value",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 4,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562335749987,
+                "sprint_order": 3,
+                "kanban_order": 1706562335749993,
+                "epics": [
+                    {
+                        "id": 218039,
+                        "ref": 1,
+                        "subject": "Burndown chart",
+                        "color": "#51D381",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295657
+                },
+                "total_points": 2.0
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": 617240,
+                "assigned_to_extra_info": {
+                    "username": "jillhansalia",
+                    "full_name_display": "Jill Bharat Hansalia",
+                    "photo": null,
+                    "big_photo": null,
+                    "gravatar_id": "c75413cd10943f05f42120a7f7c4dcc2",
+                    "is_active": true,
+                    "id": 617240
+                },
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468129,
+                "ref": 7,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:05:54.427Z",
+                "modified_date": "2024-01-30T23:26:04.306Z",
+                "finish_date": null,
+                "subject": "Visualize the metric in an appropriate way",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 5,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562354427644,
+                "sprint_order": 4,
+                "kanban_order": 1706562354427649,
+                "epics": [
+                    {
+                        "id": 218039,
+                        "ref": 1,
+                        "subject": "Burndown chart",
+                        "color": "#51D381",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295657
+                },
+                "total_points": 2.0
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468170,
+                "ref": 8,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:10:43.626Z",
+                "modified_date": "2024-01-29T21:10:43.626Z",
+                "finish_date": null,
+                "subject": "Select a taiga project to apply it to.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562643626303,
+                "sprint_order": 5,
+                "kanban_order": 1706562643626309,
+                "epics": [
+                    {
+                        "id": 218040,
+                        "ref": 2,
+                        "subject": "Cycle time",
+                        "color": "#4C566A",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468171,
+                "ref": 9,
+                "milestone": 376636,
+                "is_closed": true,
+                "created_date": "2024-01-29T21:10:43.626Z",
+                "modified_date": "2024-01-29T21:10:43.671Z",
+                "finish_date": "2024-02-04T06:16:36.247Z",
+                "subject": "Configure the metric parameters.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562643626393,
+                "sprint_order": 6,
+                "kanban_order": 1706562643626396,
+                "epics": [
+                    {
+                        "id": 218040,
+                        "ref": 2,
+                        "subject": "Cycle time",
+                        "color": "#4C566A",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468172,
+                "ref": 10,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:10:43.626Z",
+                "modified_date": "2024-01-29T21:10:43.695Z",
+                "finish_date": null,
+                "subject": "Get the data and compute the metric raw value.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562643626442,
+                "sprint_order": 7,
+                "kanban_order": 1706562643626445,
+                "epics": [
+                    {
+                        "id": 218040,
+                        "ref": 2,
+                        "subject": "Cycle time",
+                        "color": "#4C566A",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468173,
+                "ref": 11,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:10:43.626Z",
+                "modified_date": "2024-01-29T21:10:43.720Z",
+                "finish_date": null,
+                "subject": "Visualize the metric in an appropriate way.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562643626489,
+                "sprint_order": 8,
+                "kanban_order": 1706562643626491,
+                "epics": [
+                    {
+                        "id": 218040,
+                        "ref": 2,
+                        "subject": "Cycle time",
+                        "color": "#4C566A",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468179,
+                "ref": 12,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:11:00.659Z",
+                "modified_date": "2024-01-29T21:11:00.660Z",
+                "finish_date": null,
+                "subject": "Select a taiga project to apply it to.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562660659901,
+                "sprint_order": 9,
+                "kanban_order": 1706562660659906,
+                "epics": [
+                    {
+                        "id": 218055,
+                        "ref": 3,
+                        "subject": "Lead Time",
+                        "color": "#5551D3",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468180,
+                "ref": 13,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:11:00.659Z",
+                "modified_date": "2024-01-29T21:11:00.714Z",
+                "finish_date": null,
+                "subject": "Configure the metric parameters.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562660659993,
+                "sprint_order": 10,
+                "kanban_order": 1706562660659995,
+                "epics": [
+                    {
+                        "id": 218055,
+                        "ref": 3,
+                        "subject": "Lead Time",
+                        "color": "#5551D3",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468181,
+                "ref": 14,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:11:00.660Z",
+                "modified_date": "2024-01-29T21:11:00.751Z",
+                "finish_date": null,
+                "subject": "Get the data and compute the metric raw value.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562660660040,
+                "sprint_order": 11,
+                "kanban_order": 1706562660660043,
+                "epics": [
+                    {
+                        "id": 218055,
+                        "ref": 3,
+                        "subject": "Lead Time",
+                        "color": "#5551D3",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            },
+            {
+                "due_date": null,
+                "due_date_reason": "",
+                "due_date_status": "not_set",
+                "assigned_to": null,
+                "assigned_to_extra_info": null,
+                "status": 9157393,
+                "status_extra_info": {
+                    "name": "New",
+                    "color": "#70728F",
+                    "is_closed": false
+                },
+                "project": 1521720,
+                "project_extra_info": {
+                    "name": "SER516-Team-Louisville",
+                    "slug": "ser516asu-ser516-team-louisville",
+                    "logo_small_url": null,
+                    "id": 1521720
+                },
+                "id": 5468182,
+                "ref": 15,
+                "milestone": 376636,
+                "is_closed": false,
+                "created_date": "2024-01-29T21:11:00.660Z",
+                "modified_date": "2024-01-29T21:11:00.785Z",
+                "finish_date": null,
+                "subject": "Visualize the metric in an appropriate way.",
+                "client_requirement": false,
+                "team_requirement": false,
+                "external_reference": null,
+                "version": 1,
+                "is_blocked": false,
+                "blocked_note": "",
+                "backlog_order": 1706562660660085,
+                "sprint_order": 12,
+                "kanban_order": 1706562660660088,
+                "epics": [
+                    {
+                        "id": 218055,
+                        "ref": 3,
+                        "subject": "Lead Time",
+                        "color": "#5551D3",
+                        "project": {
+                            "id": 1521720,
+                            "name": "SER516-Team-Louisville",
+                            "slug": "ser516asu-ser516-team-louisville"
+                        }
+                    }
+                ],
+                "points": {
+                    "9184548": 18295653
+                },
+                "total_points": null
+            }
+        ],
+        "total_points": 8.0,
+        "closed_points": null
+    }
+]

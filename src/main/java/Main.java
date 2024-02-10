@@ -64,7 +64,9 @@ public class Main {
                             "(3) Calculate average lead time\n" +
                             "(4) Calculate lead time per user story\n" +
                             "(5) Visualize cycle time chart\n" +
+
                             "(6) Fetch Sprint details for burndown\n" +
+
                             "(7) Exit\n" +
                             "Enter action: ");
 
@@ -96,8 +98,9 @@ public class Main {
                     System.out.println("Calculating cycle time of each user stories...");
                     CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
                     break;
+                
+                 case "6":
 
-                case "6":
                     System.out.println("Fetching Sprint details for burndown...");
                     fetchSprintDetails(projectId,authToken);
                     break;
