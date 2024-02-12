@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -249,11 +250,22 @@ public class Main {
     }
 
     private static void fetchSprintDetails(int projectId, String authToken) {
-        String sprint = Burndown.promptSprint("Enter the sprint: ");
-        List<JsonNode> statsList = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
-        for(JsonNode jn : statsList){
-            System.out.println(jn);
+        String sprint = Burndown.promptSprint("Enter the sprint name: ");
+        //List to store sprint details
+        List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        System.out.println("Sprint details");
+        System.out.println(sprintDetails);
+
+        JsonNode progress = sprintDetails.get(sprintDetails.size() - 1);
+        Iterator<JsonNode> elements = progress.elements();
+        //List to store everyday progress in a sprint
+        List<JsonNode> progressList = new ArrayList<>();
+
+        System.out.println("Sprint Progress:");
+        while (elements.hasNext()) {
+            JsonNode element = elements.next();
+            System.out.println(element);
+            progressList.add(element);
         }
     }
-
 }
