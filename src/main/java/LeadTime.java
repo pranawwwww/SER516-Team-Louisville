@@ -9,18 +9,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class LeadTime {
 
-    public static Map<String, Long> getLeadTimePerTask(int projectId, String authToken, String endpoint ) {
+    public static Map<String, Map<String, Object>> getLeadTimePerTask(int projectId, String authToken, String endpoint ) {
         List<JsonNode> closedTasks = Tasks.getClosedTasks(projectId, authToken, endpoint);
-        Map<String, Long> LeadTimeMap = new HashMap<>();
+        Map<String, Map<String, Object>> LeadTimeMap = new HashMap<>();
 
         for (JsonNode task : closedTasks) {
+            Map<String, Object> data = new HashMap<>();
             String taskId = task.get("id").asText();
+            String taskName = task.path("subject").asText();
             LocalDateTime createdDate = parseDateTime(task.get("created_date").asText());
             LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
             long leadTime = Duration.between(createdDate, finishedDate).toDays();
 
-            LeadTimeMap.put(taskId,leadTime);
+            data.put("Name",taskName);
+            data.put("startDate",createdDate);
+            data.put("endDate",finishedDate);
+            data.put("leadTimeInDays",leadTime);
 
+            LeadTimeMap.put(taskId,data);
+            System.out.println("task Name: " + taskName + " Lead Time: " + leadTime +" days\n");
         }
         return LeadTimeMap;
     }
