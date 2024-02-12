@@ -48,6 +48,7 @@ public class AuthenticationGUI  extends Application {
                 alert.setContentText("Authentication Failed, Please Try Again!");
                 alert.showAndWait();
             } else {
+                System.out.println("Authentication Successful!");
                 primaryStage.hide();
                 DisplayPage.display(auth, DisplayPage.SlugURLHandler);
             }

@@ -1,7 +1,9 @@
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -31,16 +33,26 @@ public class DisplayPage {
         //Input Field for slug URL
         TextField slugInput=new TextField();
 
+        //Dropdown menu to select the metric
+        ComboBox<String> metricSelector=new ComboBox<>();
+        metricSelector.setPromptText("Select a metric: ");
+
+        //Populate the Combo Box with the Metrics
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart","Cycle Time", "Lead Time"));
+
         Button closeBtn=new Button("Submit");
         closeBtn.setOnAction(e->{
             String slugURL= slugInput.getText();
             projectID= Project.getProjectId(authToken,GlobalData.getTaigaURL(),slugURL);
+            String selectedOption=metricSelector.getValue();
+            System.out.println(projectID);
+            System.out.println(selectedOption+" Selected!!");
         });
         VBox layout=new VBox(10);
-        layout.getChildren().addAll(label,slugInput,closeBtn);
+        layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20,20,20,20));
-        Scene scene=new Scene(layout);
+        Scene scene=new Scene(layout,400,250);
         window.setScene(scene);
         window.showAndWait();
     }
