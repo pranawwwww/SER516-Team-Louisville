@@ -38,7 +38,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
 
         //Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart","Other Metric"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart","Cycle Time", "Lead Time"));
 
         Button closeBtn=new Button("Submit");
         closeBtn.setOnAction(e->{
