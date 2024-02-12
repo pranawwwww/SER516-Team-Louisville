@@ -52,7 +52,7 @@ public class AuthenticationGUI  extends Application {
                 DisplayPage.display(auth, DisplayPage.SlugURLHandler);
             }
         });
-        Scene scene=new Scene(gridPane,300,275);
+        Scene scene=new Scene(gridPane,350,300);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
