@@ -40,6 +40,11 @@ public class DisplayPage {
         //Populate the Combo Box with the Metrics
         metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart","Cycle Time", "Lead Time"));
 
+        //Input Field for Sprint Input
+        TextField sprintInput = new TextField("Enter Sprint");
+        sprintInput.setPrefWidth(80);
+        sprintInput.setMaxWidth(80);
+
         Button closeBtn=new Button("Submit");
         closeBtn.setOnAction(e->{
             String slugURL= slugInput.getText();
@@ -49,10 +54,10 @@ public class DisplayPage {
             System.out.println(selectedOption+" Selected!!");
         });
         VBox layout=new VBox(10);
-        layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
+        layout.getChildren().addAll(label,slugInput,metricSelector,sprintInput,closeBtn);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20,20,20,20));
-        Scene scene=new Scene(layout,400,250);
+        Scene scene=new Scene(layout,500,300);
         window.setScene(scene);
         window.showAndWait();
     }
