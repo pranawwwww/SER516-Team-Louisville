@@ -1,3 +1,7 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,9 +14,17 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+
 public class DisplayPage {
 
     public static DisplayPage.SlugURLHandler SlugURLHandler;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     //An interface for callback when the slugURL is submitted
     public interface SlugURLHandler{
@@ -52,6 +64,35 @@ public class DisplayPage {
             String selectedOption=metricSelector.getValue();
             System.out.println(projectID);
             System.out.println(selectedOption+" Selected!!");
+
+            //Get First and Last Date of Sprint
+            String sprint = sprintInput.getText();
+            String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+            List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+            JsonNode progress = sprintDetails.get(sprintDetails.size() - 1);
+            Iterator<JsonNode> elements = progress.elements();
+            int count = 0;
+            JsonNode firstDay = objectMapper.nullNode();
+            JsonNode lastDay = objectMapper.nullNode();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                if(count==0) {
+                    count++;
+                    firstDay = element;
+                }
+                lastDay = element;
+            }
+            String firstDate = firstDay.get("day").asText();
+            String lastDate = lastDay.get("day").asText();
+
+            if(Objects.equals(selectedOption, "Cycle Time")){
+                try {
+                    CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,firstDate,lastDate);
+                    ct.start(new Stage());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
         VBox layout=new VBox(10);
         layout.getChildren().addAll(label,slugInput,metricSelector,sprintInput,closeBtn);
