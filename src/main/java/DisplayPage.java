@@ -69,21 +69,9 @@ public class DisplayPage {
             String sprint = sprintInput.getText();
             String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
             List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
-            JsonNode progress = sprintDetails.get(sprintDetails.size() - 1);
-            Iterator<JsonNode> elements = progress.elements();
-            int count = 0;
-            JsonNode firstDay = objectMapper.nullNode();
-            JsonNode lastDay = objectMapper.nullNode();
-            while (elements.hasNext()) {
-                JsonNode element = elements.next();
-                if(count==0) {
-                    count++;
-                    firstDay = element;
-                }
-                lastDay = element;
-            }
-            String firstDate = firstDay.get("day").asText();
-            String lastDate = lastDay.get("day").asText();
+
+            String firstDate = sprintDetails.get(1).asText();
+            String lastDate = sprintDetails.get(2).asText();
 
             if(Objects.equals(selectedOption, "Cycle Time")){
                 try {
