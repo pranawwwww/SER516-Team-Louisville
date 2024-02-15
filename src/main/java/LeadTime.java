@@ -15,18 +15,20 @@ public class LeadTime {
 
         for (JsonNode task : closedTasks) {
             Map<String, Object> data = new HashMap<>();
-            String taskId = task.get("id").asText();
+            String taskId = task.path("id").asText();
             String taskName = task.path("subject").asText();
             LocalDateTime createdDate = parseDateTime(task.get("created_date").asText());
             LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
             long leadTime = Duration.between(createdDate, finishedDate).toDays();
 
             data.put("Name",taskName);
-            data.put("startDate",createdDate);
-            data.put("endDate",finishedDate);
+            data.put("startDate",createdDate.toLocalDate());
+            data.put("endDate",finishedDate.toLocalDate());
             data.put("leadTimeInDays",leadTime);
 
-            LeadTimeMap.put(taskId,data);
+            String taskDetails = taskId + ": " + taskName;
+
+            LeadTimeMap.put(taskDetails,data);
             System.out.println("task Name: " + taskName + " Lead Time: " + leadTime +" days\n");
         }
         return LeadTimeMap;
