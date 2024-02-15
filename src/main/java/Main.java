@@ -114,7 +114,7 @@ public class Main {
                     break;
                 case "5":
                     System.out.println("Calculate and display lead time per user story...") ;
-                    LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT );
+                    System.out.println(LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT ));
                     break;
 
                 case "6":
