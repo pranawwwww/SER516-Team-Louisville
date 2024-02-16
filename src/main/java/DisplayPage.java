@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -15,19 +14,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-
 public class DisplayPage {
 
     public static DisplayPage.SlugURLHandler SlugURLHandler;
 
-private static final ObjectMapper objectMapper = new ObjectMapper()
+    private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
+    private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();  
 
     //An interface for callback when the slugURL is submitted
     public interface SlugURLHandler{
@@ -73,7 +68,9 @@ private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
                     ct.start(new Stage());
                 default:
                     break;
-            }        });
+                }
+
+            });
         VBox layout=new VBox(10);
         layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
         layout.setAlignment(Pos.CENTER);

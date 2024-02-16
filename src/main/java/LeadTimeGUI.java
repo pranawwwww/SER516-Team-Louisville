@@ -6,7 +6,9 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -16,20 +18,32 @@ import java.util.Map;
 public class LeadTimeGUI extends Application {
 
     private final Map<String, Map<String, Object>> dataMap;
+    private final StackedBarChart<String, Number> stackedBarChart;
+    private final ToggleButton toggleButton;
 
     public LeadTimeGUI(Map<String, Map<String, Object>> dataMap) {
         this.dataMap = dataMap;
+
+        // Create StackedBarChart
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        this.stackedBarChart = new StackedBarChart<>(xAxis, yAxis);
+        xAxis.setLabel("Lead Time (Days)");
+        yAxis.setLabel("Number of Tasks");
+
+        // Set initial Legend visibility
+        stackedBarChart.setLegendVisible(false);
+
+        // Create ToggleButton
+        this.toggleButton = new ToggleButton("Toggle Legend");
+        toggleButton.setOnAction(e -> {
+            stackedBarChart.setLegendVisible(toggleButton.isSelected());
+        });
     }
 
     @Override
     public void start(Stage stage) {
         stage.setTitle("Lead time for all closed tasks in Project");
-
-        final CategoryAxis xAxis = new CategoryAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        final StackedBarChart<String, Number> stackedBarChart = new StackedBarChart<>(xAxis, yAxis);
-        xAxis.setLabel("Lead Time (Days)");
-        yAxis.setLabel("Number of Tasks");
 
         ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
         stackedBarChart.setData(seriesList);
@@ -37,8 +51,8 @@ public class LeadTimeGUI extends Application {
         addTooltip(stackedBarChart);
 
         HBox chartBox = new HBox(15, stackedBarChart);
-        chartBox.setTranslateX(15); 
-        Scene scene = new Scene(new HBox(15, chartBox), 800, 600);
+        chartBox.setTranslateX(15);
+        Scene scene = new Scene(new HBox(1, chartBox, toggleButton), 800, 600);
         stage.setScene(scene);
 
         stage.show();
