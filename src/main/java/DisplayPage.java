@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,9 +23,11 @@ public class DisplayPage {
 
     public static DisplayPage.SlugURLHandler SlugURLHandler;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper()
+private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
 
     //An interface for callback when the slugURL is submitted
     public interface SlugURLHandler{
@@ -59,16 +62,18 @@ public class DisplayPage {
             String selectedOption=metricSelector.getValue();
             System.out.println(projectID);
             System.out.println(selectedOption+" Selected!!");
-
-            if(Objects.equals(selectedOption, "Cycle Time")){
-                try {
-                    CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,"ENDPOINT","SPRINT_FIRST_DATE","SPRINT_LAST_DATE");
+			switch (selectedOption) {
+                case "Lead Time":
+                    Map<String, Map<String, Object>> leadTimeMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT );
+                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap);
+                    leadTimeGUI.start(new Stage());
+                    break;
+				case "Cycle Time":
+					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,"ENDPOINT","SPRINT_FIRST_DATE","SPRINT_LAST_DATE");
                     ct.start(new Stage());
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
+                default:
+                    break;
+            }        });
         VBox layout=new VBox(10);
         layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
         layout.setAlignment(Pos.CENTER);
