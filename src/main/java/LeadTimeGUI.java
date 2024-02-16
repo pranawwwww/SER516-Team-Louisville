@@ -7,6 +7,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.Comparator;
@@ -14,10 +15,10 @@ import java.util.Map;
 
 public class LeadTimeGUI extends Application {
 
-    private final Map<String, Map<String, Object>> dataMap = getDataMap(); // Your provided HashMap
+    private final Map<String, Map<String, Object>> dataMap;
 
-    public static void main(String[] args) {
-        launch(args);
+    public LeadTimeGUI(Map<String, Map<String, Object>> dataMap) {
+        this.dataMap = dataMap;
     }
 
     @Override
@@ -35,7 +36,9 @@ public class LeadTimeGUI extends Application {
 
         addTooltip(stackedBarChart);
 
-        Scene scene = new Scene(stackedBarChart, 800, 600);
+        HBox chartBox = new HBox(15, stackedBarChart);
+        chartBox.setTranslateX(15); 
+        Scene scene = new Scene(new HBox(15, chartBox), 800, 600);
         stage.setScene(scene);
 
         stage.show();
@@ -67,22 +70,14 @@ public class LeadTimeGUI extends Application {
         for (XYChart.Series<String, Number> series : chart.getData()) {
             for (XYChart.Data<String, Number> data : series.getData()) {
                 Map<String, Object> taskData = dataMap.get(series.getName());
+                String name = taskData.get("Name").toString();
                 String startDate = taskData.get("startDate").toString();
                 String endDate = taskData.get("endDate").toString();
 
-                Tooltip tooltip = new Tooltip("Start Date: " + startDate + "\nEnd Date: " + endDate);
+                Tooltip tooltip = new Tooltip("Name: " + name + "\nStart Date: " + startDate + "\nEnd Date: " + endDate);
                 Tooltip.install(data.getNode(), tooltip);
             }
         }
     }
 
-    private Map<String, Map<String, Object>> getDataMap() {
-        // Replace this method with your actual data retrieval mechanism
-        int projectId = 1520578;
-        String authToken = Authentication.authenticate("louisville_test", "SER516");
-        String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-
-        Map<String, Map<String, Object>> input = LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT);
-        return input;
-    }
 }

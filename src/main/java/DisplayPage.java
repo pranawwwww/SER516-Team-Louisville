@@ -1,3 +1,4 @@
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,6 +14,8 @@ import javafx.stage.Stage;
 public class DisplayPage {
 
     public static DisplayPage.SlugURLHandler SlugURLHandler;
+
+    private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
 
     //An interface for callback when the slugURL is submitted
     public interface SlugURLHandler{
@@ -47,6 +50,16 @@ public class DisplayPage {
             String selectedOption=metricSelector.getValue();
             System.out.println(projectID);
             System.out.println(selectedOption+" Selected!!");
+
+            switch (selectedOption) {
+                case "Lead Time":
+                    Map<String, Map<String, Object>> leadTimeMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT );
+                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap);
+                    leadTimeGUI.start(new Stage());
+                    break;
+                default:
+                    break;
+            }
         });
         VBox layout=new VBox(10);
         layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
