@@ -52,11 +52,6 @@ public class DisplayPage {
         //Populate the Combo Box with the Metrics
         metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart","Cycle Time", "Lead Time"));
 
-        //Input Field for Sprint Input
-        TextField sprintInput = new TextField("Enter Sprint");
-        sprintInput.setPrefWidth(80);
-        sprintInput.setMaxWidth(80);
-
         Button closeBtn=new Button("Submit");
         closeBtn.setOnAction(e->{
             String slugURL= slugInput.getText();
@@ -65,17 +60,9 @@ public class DisplayPage {
             System.out.println(projectID);
             System.out.println(selectedOption+" Selected!!");
 
-            //Get First and Last Date of Sprint
-            String sprint = sprintInput.getText();
-            String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-            List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
-
-            String firstDate = sprintDetails.get(1).asText();
-            String lastDate = sprintDetails.get(2).asText();
-
             if(Objects.equals(selectedOption, "Cycle Time")){
                 try {
-                    CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,firstDate,lastDate);
+                    CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,"ENDPOINT","SPRINT_FIRST_DATE","SPRINT_LAST_DATE");
                     ct.start(new Stage());
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
@@ -83,7 +70,7 @@ public class DisplayPage {
             }
         });
         VBox layout=new VBox(10);
-        layout.getChildren().addAll(label,slugInput,metricSelector,sprintInput,closeBtn);
+        layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20,20,20,20));
         Scene scene=new Scene(layout,500,300);
