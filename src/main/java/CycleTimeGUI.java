@@ -33,16 +33,9 @@ public class CycleTimeGUI extends Application {
     private ScatterChart<String, Number> scatterChart;
 
 
-    public CycleTimeGUI(int projectID,String authToken, String TAIGA_API_ENDPOINT,String firstDate, String lastDate) {
+    public CycleTimeGUI(int projectID,String authToken) {
         this.projectID = projectID;
         this.authToken = authToken;
-        this.TAIGA_API_ENDPOINT = TAIGA_API_ENDPOINT;
-        this.firstDate = firstDate;
-        this.lastDate = lastDate;
-        System.out.println(projectID+"\n"+authToken+"\n"+TAIGA_API_ENDPOINT+"\n"+firstDate+"\n"+lastDate);
-        this.xAxis = new CategoryAxis();
-        this.yAxis = new NumberAxis(0, 12,1);
-        this.scatterChart = new ScatterChart<>(xAxis, new NumberAxis());
     }
 
 
@@ -58,6 +51,11 @@ public class CycleTimeGUI extends Application {
         sprintInput = new TextField("Enter Sprint");
         sprintInput.setPrefWidth(150);
         sprintInput.setMaxWidth(150);
+
+        this.xAxis = new CategoryAxis();
+        this.yAxis = new NumberAxis();
+        this.scatterChart = new ScatterChart<>(xAxis, yAxis);
+        this.scatterChart.setPrefSize(1200, 1000);
 
         xAxis.setLabel("Date");
         yAxis.setLabel("Cycle Time");
@@ -117,12 +115,12 @@ public class CycleTimeGUI extends Application {
     }
     private void getSprintData(){
         String sprint = sprintInput.getText();
-        String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+        this.TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
         List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
 
         firstDate = sprintDetails.get(1).asText();
         lastDate = sprintDetails.get(2).asText();
 
-        new CycleTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,firstDate,lastDate);
+        new CycleTimeGUI(projectID,authToken);
     }
 }

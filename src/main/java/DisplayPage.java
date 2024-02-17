@@ -64,7 +64,7 @@ public class DisplayPage {
                     leadTimeGUI.start(new Stage());
                     break;
 				case "Cycle Time":
-					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,"ENDPOINT","SPRINT_FIRST_DATE","SPRINT_LAST_DATE");
+					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken);
                     ct.start(new Stage());
                 default:
                     break;
