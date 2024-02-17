@@ -251,21 +251,12 @@ public class Main {
 
     private static void fetchSprintDetails(int projectId, String authToken) {
         String sprint = Burndown.promptSprint("Enter the sprint name: ");
-        //List to store sprint details
-        List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
-        System.out.println("Sprint details");
-        System.out.println(sprintDetails);
-
-        JsonNode progress = sprintDetails.get(sprintDetails.size() - 1);
-        Iterator<JsonNode> elements = progress.elements();
-        //List to store everyday progress in a sprint
-        List<JsonNode> progressList = new ArrayList<>();
-
-        System.out.println("Sprint Progress:");
-        while (elements.hasNext()) {
-            JsonNode element = elements.next();
-            System.out.println(element);
-            progressList.add(element);
-        }
+        //Burndown object to store sprint details
+        Burndown bd = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        System.out.println("Sprint details fetched");
+        System.out.println("start date: "+bd.getStart_date());
+        System.out.println("end date: "+bd.getEnd_date());
+        System.out.println("Total points: "+bd.getTotal_points());
+        System.out.println("Progress: "+bd.getProgress());
     }
 }
