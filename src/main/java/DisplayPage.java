@@ -73,10 +73,11 @@ public class DisplayPage {
                     LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap);
                     leadTimeGUI.start(new Stage());
                     break;
-                case "Cycle Time":
-                    CycleTimeGUI ct = new CycleTimeGUI(projectID, authToken, "ENDPOINT", "SPRINT_FIRST_DATE",
-                            "SPRINT_LAST_DATE");
+
+				case "Cycle Time":
+					          CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken);
                     ct.start(new Stage());
+                    break;
                 case "BurnDown Chart":
                     List<JsonNode> sprintList = Burndown.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
                     List<String> sprints = Burndown.getSprints();
