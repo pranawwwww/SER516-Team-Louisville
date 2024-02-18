@@ -1,7 +1,12 @@
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.util.List;
 import java.util.Map;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,6 +34,7 @@ public class DisplayPage {
         void handle(String slugURL);
     }
     public static int projectID;
+    
     public static void display(String authToken, SlugURLHandler handler){
         Stage window=new Stage();
 
@@ -66,6 +72,11 @@ public class DisplayPage {
 				case "Cycle Time":
 					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,"ENDPOINT","SPRINT_FIRST_DATE","SPRINT_LAST_DATE");
                     ct.start(new Stage());
+                case "BurnDown Chart":
+                    List<JsonNode> sprintList= Burndown.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectID);
+                    List<String> sprints=Burndown.getSprints();
+                    createBurnDownChart(authToken,window,sprints);
+                    break;
                 default:
                     break;
                 }
@@ -73,6 +84,57 @@ public class DisplayPage {
             });
         VBox layout=new VBox(10);
         layout.getChildren().addAll(label,slugInput,metricSelector,closeBtn);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20,20,20,20));
+        Scene scene=new Scene(layout,500,300);
+        window.setScene(scene);
+        window.showAndWait();
+    }
+
+    private static void createBurnDownChart(String authToken,Stage window, List<String> sprints) {
+        window.hide();
+        Stage window2=new Stage();
+
+                    //locking events to other windows
+        window2.initModality(Modality.APPLICATION_MODAL);
+                    window2.setTitle("Select Sprint: ");
+        window2.setMinWidth(250);
+        System.out.println("new window fn");
+         
+         for(String sprint : sprints){
+            System.out.println(sprint);
+         }
+         
+        // Create a new window
+        
+
+                    ComboBox<String> sprintSelector=new ComboBox<>();
+                    sprintSelector.setPromptText("Select a sprint: ");
+                    //sprintSelector.setStyle("");
+                    System.out.println(sprintSelector.isVisible());
+
+                    //Populate the Combo Box with the sprints
+                    sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+                    
+
+
+                    Button subBtn=new Button("Submit");
+                    subBtn.setOnAction(e->{                        
+                        String selectedSprint=sprintSelector.getValue();
+                        System.out.println(projectID);
+                        System.out.println(selectedSprint+" Selected!!");
+
+                        Burndown stats= Burndown.getSprint(authToken,TAIGA_API_ENDPOINT,projectID,selectedSprint);
+                        BurndownGUI bd = new BurndownGUI(stats.getProgress());
+                        bd.start(new Stage()); 
+                    });
+
+                    Platform.runLater(() -> {
+                        sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+                    });
+
+        VBox layout=new VBox(10);
+        layout.getChildren().addAll(sprintSelector,subBtn);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20,20,20,20));
         Scene scene=new Scene(layout,500,300);
