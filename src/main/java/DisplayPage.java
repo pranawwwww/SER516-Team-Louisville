@@ -53,9 +53,11 @@ public class DisplayPage {
         // Dropdown menu to select the metric
         ComboBox<String> metricSelector = new ComboBox<>();
         metricSelector.setPromptText("Select a metric: ");
-
+        
         // Populate the Combo Box with the Metrics
         metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time"));
+        System.out.println("ComboBox Items: " + metricSelector.getItems());
+
 
         Button closeBtn = new Button("Submit");
         closeBtn.setOnAction(e -> {
@@ -78,7 +80,10 @@ public class DisplayPage {
                 case "BurnDown Chart":
                     List<JsonNode> sprintList = Burndown.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
                     List<String> sprints = Burndown.getSprints();
-                    createBurnDownChart(authToken, window, sprints);
+                    Burndown stats = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, "Sprint 1");
+                    BurndownGUI bd = new BurndownGUI(stats.getProgress());
+                    bd.start(new Stage());
+                    //createBurnDownChart(authToken, window, sprints);
                     break;
                 default:
                     break;
@@ -120,7 +125,7 @@ public class DisplayPage {
         System.out.println(sprintSelector.isVisible());
 
         // Populate the Combo Box with the sprints
-        sprintSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time"));
+        sprintSelector.setItems(FXCollections.observableArrayList(sprints));
         System.out.println("ComboBox Items: " + sprintSelector.getItems());
         System.out.println("Populated sprint");
 
