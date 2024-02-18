@@ -146,11 +146,11 @@ public class CycleTimeGUI extends Application {
     }
     private void getSprintData(){
         String sprint = sprintInput.getText();
-        this.TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+        String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+        Burndown sprintDetails = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
 
-        firstDate = sprintDetails.get(1).asText();
-        lastDate = sprintDetails.get(2).asText();
+        firstDate = sprintDetails.getStart_date();
+        lastDate = sprintDetails.getEnd_date();
 
         new CycleTimeGUI(projectID,authToken);
     }
