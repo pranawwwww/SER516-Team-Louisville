@@ -28,7 +28,7 @@ public class Burndown {
     private static String start_date;
     private static String end_date;
     private static double total_points;
-    private static List<JsonNode> progress = new ArrayList<>();
+    private static List<BurnDownDataPoint> progress = new ArrayList<>();
 
     public String getStart_date(){
         return start_date;
@@ -41,11 +41,11 @@ public class Burndown {
         return total_points;
     }
 
-    public static List<JsonNode> getProgress() {
+    public static List<BurnDownDataPoint> getProgress() {
         return progress;
     }
 
-    public Burndown(String start_date, String end_date, double total_points, List<JsonNode> progress){
+    public Burndown(String start_date, String end_date, double total_points, List<BurnDownDataPoint> progress){
         this.start_date=start_date;
         this.end_date=end_date;
         this.total_points=total_points;
@@ -131,7 +131,10 @@ public class Burndown {
 
             JsonNode progressNode = statList.get(statList.size() - 1);
             for(JsonNode node:progressNode){
-                progress.add(node);
+                String day = node.get("day").asText();
+                double openPoints = node.get("open_points").asDouble();
+                double optimalPoints = node.get("optimal_points").asDouble();
+                progress.add(new BurnDownDataPoint(day,openPoints,optimalPoints));
             }
             return new Burndown(start_date, end_date, total_points, progress);
         } catch (Exception e) {
