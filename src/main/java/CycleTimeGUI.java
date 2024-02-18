@@ -9,6 +9,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -31,14 +32,16 @@ public class CycleTimeGUI extends Application {
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
     private ScatterChart<String, Number> scatterChart;
+    private Label valueCycleTime;
+    private Label valueTaskCompleted;
+    private Float computeCycleTime;
+    private Integer numberTaskCompleted;
 
 
     public CycleTimeGUI(int projectID,String authToken) {
         this.projectID = projectID;
         this.authToken = authToken;
     }
-
-
 
     public static void main(String[] args) {
 //        launch(args);
@@ -66,9 +69,29 @@ public class CycleTimeGUI extends Application {
 
         displayButton.setOnAction(e -> displayChart());
 
+        Label avgCycleTime = new Label("Average Cycle Time in Days: ");
+        avgCycleTime.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        valueCycleTime = new Label("0");
+        valueCycleTime.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        Label taskCompleted = new Label("Number of Tasks Completed: ");
+        taskCompleted.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        valueTaskCompleted = new Label("0");
+        valueTaskCompleted.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        HBox cycleTime = new HBox(10);
+        cycleTime.getChildren().addAll(avgCycleTime,valueCycleTime);
+        cycleTime.setAlignment(Pos.CENTER);
+
+        HBox tasks = new HBox(10);
+        tasks.getChildren().addAll(taskCompleted,valueTaskCompleted);
+        tasks.setAlignment(Pos.CENTER);
+
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(sprintHolder,sprintInput, displayButton, scatterChart);
+        root.getChildren().addAll(sprintHolder,sprintInput, displayButton, cycleTime, tasks, scatterChart);
         Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cycle Time Chart Display");
@@ -103,13 +126,21 @@ public class CycleTimeGUI extends Application {
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
         Map<String, List<Integer>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT);
 
+        computeCycleTime = 0.0f;
+        numberTaskCompleted =0;
         for (Map.Entry<String, List<Integer>> entry : orderedCycleTime.entrySet()) {
             String key = entry.getKey();
             List<Integer> values = entry.getValue();
             for (Integer value : values) {
+                computeCycleTime+=value;
+                ++numberTaskCompleted;
                 series.getData().add(new XYChart.Data(key,value));
             }
         }
+        computeCycleTime/=numberTaskCompleted;
+        valueCycleTime.setText(String.format("%.2f", computeCycleTime));
+        valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
+
         //Setting the data to scatter chart
         scatterChart.getData().addAll(series);
     }
