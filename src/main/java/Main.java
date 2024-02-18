@@ -257,6 +257,9 @@ public class Main {
         System.out.println("start date: "+bd.getStart_date());
         System.out.println("end date: "+bd.getEnd_date());
         System.out.println("Total points: "+bd.getTotal_points());
-        System.out.println("Progress: "+bd.getProgress());
+        System.out.println("Data Points:");
+        for(int i=0;i<bd.getProgress().size();i++){
+            System.out.println("Day: "+bd.getProgress().get(i).getDay()+", Open Points: "+bd.getProgress().get(i).getOpenPoints()+", Optimal Points: "+bd.getProgress().get(i).getOptimalPoints());
+        }
     }
 }

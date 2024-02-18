@@ -55,10 +55,10 @@ public class CycleTimeGUI extends Application {
         submitButton.setOnAction(e->{
             String sprint = sprintInput.getText();
             String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-            List<JsonNode> sprintDetails = Burndown.getMilestoneStats(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+            Burndown sprintDetails = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
 
-            String firstDate = sprintDetails.get(1).asText();
-            String lastDate = sprintDetails.get(2).asText();
+            String firstDate = sprintDetails.getStart_date();
+            String lastDate = sprintDetails.getEnd_date();
 
             new CycleTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,firstDate,lastDate);
         });
