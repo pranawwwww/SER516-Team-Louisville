@@ -1,3 +1,4 @@
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ class CycleTimeTest {
         String authToken = Authentication.authenticate("louisville_test", "SER516");
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
 
-        Map<String, List<Integer>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
+        Map<String, List<Pair<String, Integer>>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Integer>> expected = new HashMap<>();
         expected.put("2024-01-26", Arrays.asList(0, 0, 0, 0, 0));
         expected.put("2024-01-31", Arrays.asList(5, 0, 0));
@@ -28,7 +29,7 @@ class CycleTimeTest {
         String authToken = Authentication.authenticate("louisville_test", "SER516");
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
 
-        Map<String, List<Integer>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
+        Map<String, List<Pair<String, Integer>>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Integer>> expected = new HashMap<>();
         expected.put("2024-02-10", Arrays.asList(0, 14, 7, 7, 0, 0, 0, 0, 0, 7));
         assertEquals(expected,input,"Test Passed!!");
@@ -40,7 +41,7 @@ class CycleTimeTest {
         String authToken = Authentication.authenticate("louisville_test", "SER516");
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
 
-        Map<String, List<Integer>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
+        Map<String, List<Pair<String, Integer>>> input = CycleTime.getMatrixData(projectId,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Integer>> expected = new HashMap<>();
         assertEquals(expected,input,"Test Passed!!");
     }
