@@ -17,11 +17,22 @@ public class LeadTime {
             Map<String, Object> data = new HashMap<>();
             String taskId = task.path("id").asText();
             String taskName = task.path("subject").asText();
+            String userStoryName = task.path("user_story_extra_info").path("subject").asText();
+            JsonNode userStoryExtraInfo = task.path("user_story_extra_info");
+            JsonNode epicsArray = userStoryExtraInfo.path("epics");
+            String epicName = "";
+            if (epicsArray.isArray() && epicsArray.size() > 0) {
+                JsonNode firstEpic = epicsArray.get(0);
+                if (firstEpic != null) {
+                    epicName = firstEpic.path("subject").asText();
+                }
+            }
             LocalDateTime createdDate = parseDateTime(task.get("created_date").asText());
             LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
             long leadTime = Duration.between(createdDate, finishedDate).toDays();
-
-            data.put("Name",taskName);
+            data.put("taskName",taskName);
+            data.put("userStoryName",userStoryName);
+            data.put("epicName",epicName);
             data.put("startDate",createdDate.toLocalDate());
             data.put("endDate",finishedDate.toLocalDate());
             data.put("leadTimeInDays",leadTime);
