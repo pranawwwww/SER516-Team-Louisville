@@ -29,6 +29,7 @@ public class Burndown {
     private static String end_date;
     private static double total_points;
     private static List<BurnDownDataPoint> progress = new ArrayList<>();
+    private static List<String> sprints = new ArrayList<>();
 
     public String getStart_date(){
         return start_date;
@@ -45,11 +46,15 @@ public class Burndown {
         return progress;
     }
 
+    public static List<String> getSprints(){
+        return sprints;
+    }
+    
     public Burndown(String start_date, String end_date, double total_points, List<BurnDownDataPoint> progress){
         this.start_date=start_date;
         this.end_date=end_date;
         this.total_points=total_points;
-        this.progress = progress != null ? progress : new ArrayList<>();;
+        this.progress = progress != null ? progress : new ArrayList<>();
     }
 
     public static String promptSprint(String prompt){
@@ -80,6 +85,10 @@ public class Burndown {
             for (JsonNode milestone : milestones) {
                 list.add(milestone);
             }
+            
+            for (JsonNode milestone : list) {
+                sprints.add(milestone.get("name").textValue());
+            }
 
 
         } catch (Exception e) {
@@ -92,7 +101,7 @@ public class Burndown {
 
     public static Burndown getSprint(String authToken,String TAIGA_API_ENDPOINT,int projectId,String sprint) {
 
-        List<JsonNode> list = getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectId);
+        List<JsonNode> list = getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectId);        
         List<JsonNode> statList = new ArrayList<>();
         int mileStoneId = -1;
         for (JsonNode milestone : list) {
