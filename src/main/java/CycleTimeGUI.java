@@ -1,20 +1,17 @@
-import com.fasterxml.jackson.databind.JsonNode;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-
+import org.apache.commons.lang3.tuple.Pair;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -81,6 +78,7 @@ public class CycleTimeGUI extends Application {
         valueTaskCompleted = new Label("0");
         valueTaskCompleted.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
+
         HBox cycleTime = new HBox(10);
         cycleTime.getChildren().addAll(avgCycleTime,valueCycleTime);
         cycleTime.setAlignment(Pos.CENTER);
@@ -120,29 +118,30 @@ public class CycleTimeGUI extends Application {
         xAxis.setCategories(FXCollections.observableArrayList(dateList));
         xAxis.setTickLabelRotation(90);
 
-        //Prepare XYChart.Series objects by setting data
-        XYChart.Series series = new XYChart.Series();
-
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        Map<String, List<Integer>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT);
+        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT);
 
         computeCycleTime = 0.0f;
         numberTaskCompleted =0;
-        for (Map.Entry<String, List<Integer>> entry : orderedCycleTime.entrySet()) {
+        for (Map.Entry<String, List<Pair<String, Integer>>> entry : orderedCycleTime.entrySet()) {
             String key = entry.getKey();
-            List<Integer> values = entry.getValue();
-            for (Integer value : values) {
-                computeCycleTime+=value;
+            List<Pair<String, Integer>> pairs = entry.getValue();
+            for (Pair<String, Integer> pair : pairs) {
+                String subject = pair.getLeft(); // Extracting subject from Pair
+                Integer value = pair.getRight(); // Extracting integer value from Pair
+                computeCycleTime += value;
                 ++numberTaskCompleted;
-                series.getData().add(new XYChart.Data(key,value));
+                XYChart.Series<String, Number> dataPoint = new XYChart.Series<>();
+                XYChart.Data<String, Number> data = new XYChart.Data<>(key, (Number) value);
+                dataPoint.getData().add(data);
+                scatterChart.getData().add(dataPoint);
+                Tooltip tooltip = new Tooltip(subject);
+                Tooltip.install(data.getNode(), tooltip);
             }
         }
         computeCycleTime/=numberTaskCompleted;
         valueCycleTime.setText(String.format("%.2f", computeCycleTime));
         valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
-
-        //Setting the data to scatter chart
-        scatterChart.getData().addAll(series);
     }
     private void getSprintData(){
         String sprint = sprintInput.getText();
