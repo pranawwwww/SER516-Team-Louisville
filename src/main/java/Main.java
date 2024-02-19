@@ -25,7 +25,7 @@ public class Main {
 
         while(true){
             String choice = promptUser("enter choice:\n"+
-            "(1) Launch GUI\n"+
+            "(1)Launch GUI\n"+
             "(2)Launch CLI\n"+
             "(3)exit\n");
             switch (choice) {
@@ -114,7 +114,7 @@ public class Main {
                     break;
                 case "5":
                     System.out.println("Calculate and display lead time per user story...") ;
-                    LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT );
+                    LeadTime.getLeadTimePerTask(projectId, authToken, TAIGA_API_ENDPOINT,"Sprint 1" );
                     break;
 
                 case "6":

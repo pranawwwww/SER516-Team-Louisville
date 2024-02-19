@@ -18,7 +18,6 @@ import java.util.Scanner;
 public class Burndown {
 
 
-    private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
     private static final Scanner scanner = new Scanner(System.in);
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
@@ -34,7 +33,7 @@ public class Burndown {
     public String getStart_date(){
         return start_date;
     }
-    public static String getEnd_date() {
+    public String getEnd_date() {
         return end_date;
     }
 
@@ -113,6 +112,9 @@ public class Burndown {
 
         String endpoint = TAIGA_API_ENDPOINT + "/milestones/" + mileStoneId + "/stats";
         try {
+            if(!progress.isEmpty()){
+                progress.clear();
+            }
             HttpClient httpClient = HttpClients.createDefault();
             HttpGet request = new HttpGet(endpoint);
             request.setHeader("Authorization", "Bearer " + authToken);
