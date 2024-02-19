@@ -4,7 +4,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -25,6 +28,7 @@ public class CycleTimeGUI extends Application {
     private String firstDate;
     private String lastDate;
     private TextField sprintInput;
+    private ComboBox<String> sprintComboBox;
     private Button displayButton;
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
@@ -33,11 +37,14 @@ public class CycleTimeGUI extends Application {
     private Label valueTaskCompleted;
     private Float computeCycleTime;
     private Integer numberTaskCompleted;
+    private String sprint;
+    private Label sprintDetails;
 
 
-    public CycleTimeGUI(int projectID,String authToken) {
+    public CycleTimeGUI(int projectID,String authToken, String sprint) {
         this.projectID = projectID;
         this.authToken = authToken;
+        this.sprint = sprint;
     }
 
     public static void main(String[] args) {
@@ -46,11 +53,8 @@ public class CycleTimeGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Label sprintHolder = new Label("Enter Sprint Number below (ex: \"Sprint 1\")");
-        sprintHolder.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        sprintInput = new TextField("Enter Sprint");
-        sprintInput.setPrefWidth(150);
-        sprintInput.setMaxWidth(150);
+        sprintDetails = new Label("Data for " + sprint);
+        sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
         this.xAxis = new CategoryAxis();
         this.yAxis = new NumberAxis();
@@ -61,10 +65,6 @@ public class CycleTimeGUI extends Application {
         yAxis.setLabel("Cycle Time");
         
         scatterChart.setLegendVisible(false);
-
-        displayButton = new Button("Display");
-
-        displayButton.setOnAction(e -> displayChart());
 
         Label avgCycleTime = new Label("Average Cycle Time in Days: ");
         avgCycleTime.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -89,11 +89,13 @@ public class CycleTimeGUI extends Application {
 
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(sprintHolder,sprintInput, displayButton, cycleTime, tasks, scatterChart);
+        root.getChildren().addAll(sprintDetails, cycleTime, tasks, scatterChart);
         Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Cycle Time Chart Display");
+        primaryStage.setTitle("Cycle Time Chart Display " + sprint);
         primaryStage.show();
+
+        displayChart();
     }
     private void displayChart(){
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -144,13 +146,27 @@ public class CycleTimeGUI extends Application {
         valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
     }
     private void getSprintData(){
-        String sprint = sprintInput.getText();
+
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        Burndown sprintDetails = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+        try{
+            Burndown sprintDetails = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
 
-        firstDate = sprintDetails.getStart_date();
-        lastDate = sprintDetails.getEnd_date();
+            firstDate = sprintDetails.getStart_date();
+            lastDate = sprintDetails.getEnd_date();
+    
+            // new CycleTimeGUI(projectID,authToken,sprints);
+        }
+        catch(Exception e){
+            showAlert("Error", "Please Try a Done Sprint .");
+        }
 
-        new CycleTimeGUI(projectID,authToken);
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

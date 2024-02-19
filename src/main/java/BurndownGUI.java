@@ -3,53 +3,57 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class BurndownGUI extends Application {
-    private final List<BurnDownDataPoint> dataPoints;
+    private List<BurnDownDataPoint> dataPoints;
     private LineChart<String, Number> lineChart;
-    private final ToggleButton toggleButton;
+    private String sprint;
+    private Burndown stats;
 
     // Additional parameters for Taiga API
     // private final String taigaApiEndpoint;
     // private final String authToken;
     // private final String sprintLastDate;
 
-    public BurndownGUI(List<BurnDownDataPoint> dataPoints) {
-        this.dataPoints = dataPoints;
-        
-        // Create LineChart
+    public BurndownGUI(Burndown stats, String sprint) {
+        this.stats = stats;
+        this.sprint = sprint;    
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        //this.lineChart = new LineChart<>(xAxis, yAxis);
         xAxis.setLabel("Day");
         yAxis.setLabel("Points");
 
-        // Create ToggleButton
-        this.toggleButton = new ToggleButton("Toggle Legend");
-        toggleButton.setOnAction(e -> {
-            lineChart.setLegendVisible(toggleButton.isSelected());
-        });
     }
      
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Burndown Chart");
+        stage.setTitle("Burndown Chart for "+ sprint);
+        Label sprintDetails = new Label("Data for " + sprint);
+        sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        sprintDetails.setAlignment(Pos.CENTER);
+
+        getDataPoints();
 
         ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
+        this.lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
         lineChart.setData(seriesList);
+        lineChart.setLegendVisible(true);
 
         HBox chartBox = new HBox(15, lineChart);
         chartBox.setTranslateX(15);
-        Scene scene = new Scene(new HBox(1, chartBox, toggleButton), 800, 600);
+        Scene scene = new Scene(new HBox(1,sprintDetails, chartBox,lineChart), 800, 600);
         stage.setScene(scene);
 
         stage.show();
@@ -79,14 +83,31 @@ public class BurndownGUI extends Application {
             optimalPointsSeries.getData().add(optimalPointsData);
         }
 
-        this.lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
-
         seriesList.add(openPointsSeries);
         seriesList.add(optimalPointsSeries);
 
         return seriesList;
     }
 
-    
-       
+    private void getDataPoints(){
+
+        try{
+            if(stats == null){
+                throw new IllegalArgumentException("Sprint has not started");
+            }
+            this.dataPoints = stats.getProgress();
+        }
+        catch(Exception e){
+            showAlert("Error", "Please Try a Sprint which has been started.");
+        }
+
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }  
 }
