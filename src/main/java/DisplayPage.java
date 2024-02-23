@@ -64,7 +64,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Churn"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -84,7 +84,6 @@ public class DisplayPage {
                     LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap,selectedSprint);
                     leadTimeGUI.start(new Stage());
                     break;
-
 				case "Cycle Time":
 					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,selectedSprint);
                     ct.start(new Stage());
@@ -94,6 +93,10 @@ public class DisplayPage {
                     BurndownGUI bd = new BurndownGUI(stats,selectedSprint);
                     bd.start(new Stage());
                     //createBurnDownChart(authToken, window, sprints);
+                    break;
+                case "Task Churn":
+                    TaskChurn tc = new TaskChurn();
+                    tc.start(new Stage());
                     break;
                 default:
                     break;
