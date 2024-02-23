@@ -1,4 +1,4 @@
-import java.io.FileInputStream;
+package utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -7,7 +7,7 @@ public class GlobalData {
 
 
     public static String getTaigaURL() {
-        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
+        try (InputStream input = GlobalData.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 System.out.println("Sorry, unable to find config.properties");
                 return "default_taiga_url";

@@ -1,3 +1,4 @@
+package LeadTime;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,6 +52,8 @@ public class LeadTimeGUI extends Application {
 
 
         ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
+        if(seriesList.isEmpty())
+            return;
         stackedBarChart.setData(seriesList);
 
         addTooltip(stackedBarChart);

@@ -1,3 +1,4 @@
+package BurnDown;
 import java.util.List;
 
 import javafx.application.Application;
@@ -14,21 +15,24 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import utils.SprintData;
 
 public class BurndownGUI extends Application {
     private List<BurnDownDataPoint> dataPoints;
     private LineChart<String, Number> lineChart;
     private String sprint;
-    private Burndown stats;
+    private SprintData sprintData;
+    private List<BurnDownDataPoint> progress;
 
     // Additional parameters for Taiga API
     // private final String taigaApiEndpoint;
     // private final String authToken;
     // private final String sprintLastDate;
 
-    public BurndownGUI(Burndown stats, String sprint) {
-        this.stats = stats;
+    public BurndownGUI(SprintData sprintData,List<BurnDownDataPoint> progress , String sprint) {
+        this.sprintData = sprintData;
         this.sprint = sprint;    
+        this.progress = progress;
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Day");
@@ -71,31 +75,38 @@ public class BurndownGUI extends Application {
         optimalPointsSeries.setName("Optimal Points");
 
         // Assuming dataPoints is sorted by date
-        for (int i = 0; i < dataPoints.size(); i++) {
-            BurnDownDataPoint dataPoint = dataPoints.get(i);
+        try{
 
-            // Open Points
-            XYChart.Data<String, Number> openPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOpenPoints());
-            openPointsSeries.getData().add(openPointsData);
+            for (int i = 0; i < dataPoints.size(); i++) {
+                BurnDownDataPoint dataPoint = dataPoints.get(i);
 
-            // Optimal Points
-            XYChart.Data<String, Number> optimalPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOptimalPoints());
-            optimalPointsSeries.getData().add(optimalPointsData);
+                // Open Points
+                XYChart.Data<String, Number> openPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOpenPoints());
+                openPointsSeries.getData().add(openPointsData);
+
+                // Optimal Points
+                XYChart.Data<String, Number> optimalPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOptimalPoints());
+                optimalPointsSeries.getData().add(optimalPointsData);
+            }
+
+            seriesList.add(openPointsSeries);
+            seriesList.add(optimalPointsSeries);
+        } catch ( Exception e ) {
+            e.printStackTrace();
         }
 
-        seriesList.add(openPointsSeries);
-        seriesList.add(optimalPointsSeries);
 
         return seriesList;
+
     }
 
     private void getDataPoints(){
 
         try{
-            if(stats == null){
+            if(progress == null){
                 throw new IllegalArgumentException("Sprint has not started");
             }
-            this.dataPoints = stats.getProgress();
+            this.dataPoints = progress;
         }
         catch(Exception e){
             showAlert("Error", "Please Try a Sprint which has been started.");

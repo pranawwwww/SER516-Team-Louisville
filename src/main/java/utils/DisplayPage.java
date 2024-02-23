@@ -1,13 +1,14 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.lang.reflect.Array;
+package utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import BurnDown.BurnDownDataPoint;
+import BurnDown.Burndown;
+import BurnDown.BurndownGUI;
+import CycleTime.CycleTimeGUI;
+import LeadTime.LeadTime;
+import LeadTime.LeadTimeGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,10 +24,6 @@ import javafx.stage.Stage;
 public class DisplayPage {
 
     public static DisplayPage.SlugURLHandler SlugURLHandler;
-
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
 
@@ -53,10 +50,10 @@ public class DisplayPage {
 
         // Dropdown menu to select the sprint
         ComboBox<String> sprintSelector = new ComboBox<>();
-        sprintSelector.setPromptText("Select a sprint: ");
+        sprintSelector.setPromptText("Fetch all Sprints");
 
         // Button to trigger sprint selection
-        Button selectSprintBtn = new Button("Select Sprint");
+        Button selectSprintBtn = new Button("Select a Sprint");
         selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
 
         // Dropdown menu to select the metric
@@ -89,10 +86,11 @@ public class DisplayPage {
                     ct.start(new Stage());
                     break;
                 case "BurnDown Chart":
-                    Burndown stats = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    BurndownGUI bd = new BurndownGUI(stats,selectedSprint);
+                    SprintData stats = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    System.out.println(progress);
+                    BurndownGUI bd = new BurndownGUI(stats,progress,selectedSprint);
                     bd.start(new Stage());
-                    //createBurnDownChart(authToken, window, sprints);
                     break;
                 case "Task Churn":
                     TaskChurn tc = new TaskChurn();
@@ -114,10 +112,8 @@ public class DisplayPage {
 
     private static void selectSprint(String authToken, String slugURL, ComboBox<String> sprintSelector) {
         projectID = Project.getProjectId(authToken, GlobalData.getTaigaURL(), slugURL);
-        Burndown.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
-        List<String> sprints = new ArrayList<>(Burndown.getSprints());
+        SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
+        List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
         sprintSelector.setItems(FXCollections.observableArrayList(sprints));
     }
-    
-
 }
