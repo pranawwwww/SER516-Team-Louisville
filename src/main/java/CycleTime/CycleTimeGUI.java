@@ -1,3 +1,4 @@
+package CycleTime;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +15,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import utils.SprintData;
+import utils.SprintUtils;
+
 import org.apache.commons.lang3.tuple.Pair;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -149,7 +153,7 @@ public class CycleTimeGUI extends Application {
 
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
         try{
-            Burndown sprintDetails = Burndown.getSprint(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
 
             firstDate = sprintDetails.getStart_date();
             lastDate = sprintDetails.getEnd_date();

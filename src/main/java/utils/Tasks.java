@@ -1,3 +1,4 @@
+package utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -51,7 +52,7 @@ public class Tasks {
         return LocalDateTime.parse(dateTimeString, formatter);
     }
 
-    static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
+    public static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
         int cycleTime = 0;
         int closedTasks = 0;
 

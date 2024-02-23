@@ -1,3 +1,4 @@
+package BurnDown;
 public class BurnDownDataPoint {
     private String day;
     private double openPoints;
