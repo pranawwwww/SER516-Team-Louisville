@@ -9,6 +9,8 @@ import BurnDown.BurndownGUI;
 import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
+import TaskChurn.TaskChurnGUI;
+import TaskDefectDensity.TaskDefectDensityGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -61,7 +63,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Churn"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -92,8 +94,12 @@ public class DisplayPage {
                     BurndownGUI bd = new BurndownGUI(stats,progress,selectedSprint);
                     bd.start(new Stage());
                     break;
+                case "Task Defect Density":
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI();
+                    tdd.start(new Stage());
+                    break;
                 case "Task Churn":
-                    TaskChurn tc = new TaskChurn();
+                    TaskChurnGUI tc = new TaskChurnGUI();
                     tc.start(new Stage());
                     break;
                 default:
