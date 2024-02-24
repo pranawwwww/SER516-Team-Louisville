@@ -1,4 +1,5 @@
 package utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -100,5 +101,31 @@ public class Tasks {
             }
         }
         return result;
+    }
+    public static List<JsonNode> countAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+
+        SprintData sprintData = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        String startDate = sprintData.getStart_date();
+        String endDate = sprintData.getEnd_date();
+
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project="+ projectId+"&created_date__gte="+startDate+"&created_date__lte="+endDate;
+
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> allTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                allTasks.add(taskNode);
+            }
+            return allTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
