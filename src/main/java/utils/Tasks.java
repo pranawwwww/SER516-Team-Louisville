@@ -104,12 +104,8 @@ public class Tasks {
     }
     public static List<JsonNode> countAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
 
-        SprintData sprintData = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
-        String startDate = sprintData.getStart_date();
-        String endDate = sprintData.getEnd_date();
-
-        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project="+ projectId+"&created_date__gte="+startDate+"&created_date__lte="+endDate;
-
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
         HttpGet request = new HttpGet(endpoint);
         request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
