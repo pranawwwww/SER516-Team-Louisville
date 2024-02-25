@@ -24,9 +24,10 @@ public class UserStoryUtils {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     
-    public static List<JsonNode> getAllUserStories(String authToken,String TAIGA_API_ENDPOINT,int projectId) {
+    public static List<JsonNode> getAllUserStories(String authToken,String TAIGA_API_ENDPOINT,int projectId, String sprint) {
         List<JsonNode> statList = new ArrayList<>();
-        String endpoint = TAIGA_API_ENDPOINT + "/userstories?project=" + projectId;
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/userstories?milestone="+milestoneId;
 
         try{
             HttpClient httpClient = HttpClients.createDefault();
@@ -54,9 +55,10 @@ public class UserStoryUtils {
         return statList;
     }
 
-    public static List<JsonNode> getAllIssues(String authToken,String TAIGA_API_ENDPOINT,int projectId) {
+    public static List<JsonNode> getAllIssues(String authToken,String TAIGA_API_ENDPOINT,int projectId, String sprint) {
         List<JsonNode> statList = new ArrayList<>();
-        String endpoint = TAIGA_API_ENDPOINT + "/issues?project=" + projectId;
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/issues?milestone="+milestoneId;
 
         try{
             HttpClient httpClient = HttpClients.createDefault();

@@ -102,7 +102,7 @@ public class Tasks {
         }
         return result;
     }
-    public static List<JsonNode> countAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+    public static List<JsonNode> getAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
 
         int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
         String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
