@@ -1,5 +1,9 @@
+package Authentication;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import utils.GlobalData;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -10,7 +14,6 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Base64;
 
 public class Authentication {
     private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
@@ -35,10 +38,12 @@ public class Authentication {
             while ((line = reader.readLine()) != null) {
                 result.append(line);
             }
-
-            return parseAuthToken(result.toString());
+            String parsedToken = parseAuthToken(result.toString());
+            if(parsedToken.isEmpty()){
+                throw new IOException("Incorrect User name or Password");
+            }
+            return parsedToken;
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -49,7 +54,6 @@ public class Authentication {
             JsonNode rootNode = objectMapper.readTree(responseJson);
             return rootNode.path("auth_token").asText();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

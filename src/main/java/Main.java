@@ -1,27 +1,8 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpGet;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-
+import Authentication.AuthenticationGUI;
 
 public class Main {
-
-    private static final String TAIGA_API_ENDPOINT = GlobalData.getTaigaURL();
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
     public static void main(String[] args) {
+<<<<<<< HEAD
 
         while(true){
             String choice = promptUser("enter choice:\n"+
@@ -264,6 +245,9 @@ public class Main {
         for(int i=0;i<bd.getProgress().size();i++){
             System.out.println("Day: "+bd.getProgress().get(i).getDay()+", Open Points: "+bd.getProgress().get(i).getOpenPoints()+", Optimal Points: "+bd.getProgress().get(i).getOptimalPoints());
         }
+=======
+        AuthenticationGUI.launch(AuthenticationGUI.class,args);
+>>>>>>> 779c82f43efd78df30a87cb35eb9986cae7895e6
     }
     
 }

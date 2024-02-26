@@ -1,66 +1,37 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
+package utils;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-public class Burndown {
-
-
-    private static final Scanner scanner = new Scanner(System.in);
+public class SprintUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-
     private static String start_date;
     private static String end_date;
     private static double total_points;
-    private static List<BurnDownDataPoint> progress = new ArrayList<>();
     private static List<String> sprints = new ArrayList<>();
+    private static JsonNode progressNode;
 
-    public String getStart_date(){
-        return start_date;
-    }
-    public String getEnd_date() {
-        return end_date;
-    }
-
-    public static double getTotal_points() {
-        return total_points;
-    }
-
-    public static List<BurnDownDataPoint> getProgress() {
-        return progress;
-    }
 
     public static List<String> getSprints(){
         return sprints;
     }
     
-    public Burndown(String start_date, String end_date, double total_points, List<BurnDownDataPoint> progress){
-        this.start_date=start_date;
-        this.end_date=end_date;
-        this.total_points=total_points;
-        this.progress = progress != null ? progress : new ArrayList<>();
-    }
-
-    public static String promptSprint(String prompt){
-        System.out.print(prompt);
-        return scanner.nextLine();
-    }
-
     public static List<JsonNode> getMilestoneList(String authToken,String TAIGA_API_ENDPOINT,int projectId) {
 
         List<JsonNode> list = new ArrayList<>();
@@ -98,7 +69,7 @@ public class Burndown {
 
     }
 
-    public static Burndown getSprint(String authToken,String TAIGA_API_ENDPOINT,int projectId,String sprint) {
+    public static SprintData getSprintDetails(String authToken,String TAIGA_API_ENDPOINT,int projectId,String sprint) {
 
         List<JsonNode> list = getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectId);        
         List<JsonNode> statList = new ArrayList<>();
@@ -111,10 +82,7 @@ public class Burndown {
         }
 
         String endpoint = TAIGA_API_ENDPOINT + "/milestones/" + mileStoneId + "/stats";
-        try {
-            if(!progress.isEmpty()){
-                progress.clear();
-            }
+        try{
             HttpClient httpClient = HttpClients.createDefault();
             HttpGet request = new HttpGet(endpoint);
             request.setHeader("Authorization", "Bearer " + authToken);
@@ -139,21 +107,35 @@ public class Burndown {
             JsonNode points=statList.get(3);
             Iterator<String> fields=points.fieldNames();
             total_points=points.get(fields.next()).asDouble();
-
-            JsonNode progressNode = statList.get(statList.size() - 1);
-            for(JsonNode node:progressNode){
-                String day = node.get("day").asText();
-                double openPoints = node.get("open_points").asDouble();
-                double optimalPoints = node.get("optimal_points").asDouble();
-                progress.add(new BurnDownDataPoint(day,openPoints,optimalPoints));
-            }
-            return new Burndown(start_date, end_date, total_points, progress);
+            progressNode = statList.get(statList.size() - 1);
+            return new SprintData(start_date, end_date, total_points, progressNode);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
     }
+    public static int getSprintIdByName(String authToken, String TAIGA_API_ENDPOINT, int projectId, String sprintName) {
+        try {
+            String endpoint = TAIGA_API_ENDPOINT + "/milestones?project=" + projectId;
+            HttpGet request = new HttpGet(endpoint);
+            request.setHeader("Authorization", "Bearer " + authToken);
+            request.setHeader("Content-Type", "application/json");
 
+            String responseJson = HTTPRequest.sendHttpRequest(request);
 
+            JsonNode milestonesNode = objectMapper.readTree(responseJson);
+            for (JsonNode milestone : milestonesNode) {
+                String name = milestone.get("name").asText();
+                if (sprintName.equals(name)) {
+                    return milestone.get("id").asInt();
+                }
+            }
+            System.out.println("Sprint not found!");
+            return -1; // Return -1 if sprint not found
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; // Return -1 in case of any exception
+        }
+    }
 }

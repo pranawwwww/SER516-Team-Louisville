@@ -1,3 +1,5 @@
+package utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -59,7 +61,7 @@ public class Tasks {
         return LocalDateTime.parse(dateTimeString, formatter);
     }
 
-    static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
+    public static int[] calculateCycleTime(JsonNode historyData, LocalDateTime finishedDate) {
         int cycleTime = 0;
         int closedTasks = 0;
 
@@ -108,6 +110,7 @@ public class Tasks {
         }
         return result;
     }
+<<<<<<< HEAD:src/main/java/Tasks.java
 
     public static double getTaskDefectDensity(int projectId, String authToken, String TAIGA_API_ENDPOINT){
         
@@ -116,5 +119,53 @@ public class Tasks {
         System.out.println("percentage"+(totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks);
         return ((totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks)*100;
 
+=======
+    public static List<JsonNode> getAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> allTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                allTasks.add(taskNode);
+            }
+            return allTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public static List<JsonNode> getUnfinishedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint) {
+        int milestoneId = SprintUtils.getSprintIdByName(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone=" + milestoneId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> unfinishedTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                JsonNode isClosedNode = taskNode.get("is_closed");
+                if (isClosedNode != null && isClosedNode.isBoolean() && !isClosedNode.asBoolean()) {
+                    unfinishedTasks.add(taskNode);
+                    System.out.println("task subject" + taskNode.get("subject").asText());
+                }
+            }
+            return unfinishedTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+>>>>>>> 779c82f43efd78df30a87cb35eb9986cae7895e6:src/main/java/utils/Tasks.java
     }
 }

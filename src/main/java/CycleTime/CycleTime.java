@@ -1,7 +1,12 @@
+package CycleTime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import utils.HTTPRequest;
+import utils.Tasks;
+
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,7 +26,7 @@ public class CycleTime {
     }
 
 
-    static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT){
+    public static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT){
 
         List<JsonNode> tasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Pair<String, Integer>>> cycleTime = calculateAndPrintCycleTime(tasks,authToken,TAIGA_API_ENDPOINT);
