@@ -213,6 +213,9 @@ public class Main {
 
     private static void getLeadTime(int projectId, String authToken) {
         List<JsonNode> closedTasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT);
+        System.out.println("Total tasks"+Tasks.getTotalNumberOfTasks());
+        double taskDefectDensity = Tasks.getTaskDefectDensity(projectId, authToken,TAIGA_API_ENDPOINT);
+        System.out.println("Task defect density percentage:" + taskDefectDensity);
 
         int leadTime = 0;
         int closedTasksCount = 0;
@@ -262,4 +265,5 @@ public class Main {
             System.out.println("Day: "+bd.getProgress().get(i).getDay()+", Open Points: "+bd.getProgress().get(i).getOpenPoints()+", Optimal Points: "+bd.getProgress().get(i).getOptimalPoints());
         }
     }
+    
 }

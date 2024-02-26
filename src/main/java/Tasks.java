@@ -15,6 +15,12 @@ public class Tasks {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    
+    private static int totalNumberOfTasks;
+
+    public static int getTotalNumberOfTasks(){
+        return totalNumberOfTasks;
+    }
 
     public static List<JsonNode> getClosedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
 
@@ -26,12 +32,14 @@ public class Tasks {
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
         String responseJson = HTTPRequest.sendHttpRequest(request);
+        
 
         try {
             JsonNode tasksNode = objectMapper.readTree(responseJson);
+            totalNumberOfTasks= tasksNode.size();
             List<JsonNode> closedTasks = new ArrayList<>();
 
-            for (JsonNode taskNode : tasksNode) {
+            for (JsonNode taskNode : tasksNode) {                
                 boolean isClosed = taskNode.has("is_closed") && taskNode.get("is_closed").asBoolean();
                 if (isClosed) {
                     closedTasks.add(taskNode);
@@ -99,5 +107,14 @@ public class Tasks {
             }
         }
         return result;
+    }
+
+    public static double getTaskDefectDensity(int projectId, String authToken, String TAIGA_API_ENDPOINT){
+        
+        List<JsonNode> closedTasks= getClosedTasks(projectId,authToken,TAIGA_API_ENDPOINT);
+        System.out.println("closedTasks.size()"+closedTasks.size());
+        System.out.println("percentage"+(totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks);
+        return ((totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks)*100;
+
     }
 }
