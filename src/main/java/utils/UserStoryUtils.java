@@ -47,6 +47,7 @@ public class UserStoryUtils {
             JsonNode userStories = objectMapper.readTree(result.toString());
             for (JsonNode userStory : userStories) {
                 statList.add(userStory);
+                System.out.println(userStory);
             }
         }
         catch(Exception e){
