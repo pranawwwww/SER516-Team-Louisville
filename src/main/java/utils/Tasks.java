@@ -110,7 +110,6 @@ public class Tasks {
         }
         return result;
     }
-<<<<<<< HEAD:src/main/java/Tasks.java
 
     public static double getTaskDefectDensity(int projectId, String authToken, String TAIGA_API_ENDPOINT){
         
@@ -119,7 +118,6 @@ public class Tasks {
         System.out.println("percentage"+(totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks);
         return ((totalNumberOfTasks-closedTasks.size())/totalNumberOfTasks)*100;
 
-=======
     public static List<JsonNode> getAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
 
         int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
@@ -166,7 +164,6 @@ public class Tasks {
             e.printStackTrace();
             return new ArrayList<>();
         }
->>>>>>> 779c82f43efd78df30a87cb35eb9986cae7895e6:src/main/java/utils/Tasks.java
     }
 
     public static List<JsonNode> getTaskStatuses(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
