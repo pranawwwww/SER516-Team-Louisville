@@ -5,6 +5,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class TaskDefectDensityGUI extends Application {
@@ -16,6 +19,19 @@ public class TaskDefectDensityGUI extends Application {
         ObservableList<PieChart.Data> pieChartData = getChartData();
 
         PieChart pieChart = new PieChart(pieChartData);
+
+        for (PieChart.Data data : pieChart.getData()) {
+            Tooltip tooltip = new Tooltip(String.format("%s: %.2f", data.getName(), data.getPieValue()));
+            Tooltip.install(data.getNode(), tooltip);
+
+            data.getNode().setOnMouseEntered(event -> {
+                data.getNode().setStyle("-fx-cursor: hand;");
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                data.getNode().setStyle("");
+            });
+        }
 
         Scene scene = new Scene(pieChart, 800, 600);
         stage.setScene(scene);
@@ -33,4 +49,5 @@ public class TaskDefectDensityGUI extends Application {
 
         return pieChartData;
     }
+
 }
