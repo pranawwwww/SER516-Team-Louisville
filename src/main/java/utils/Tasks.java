@@ -140,7 +140,6 @@ public class Tasks {
                 JsonNode isClosedNode = taskNode.get("is_closed");
                 if (isClosedNode != null && isClosedNode.isBoolean() && !isClosedNode.asBoolean()) {
                     unfinishedTasks.add(taskNode);
-                    System.out.println("task subject" + taskNode.get("subject").asText());
                 }
             }
             return unfinishedTasks;
