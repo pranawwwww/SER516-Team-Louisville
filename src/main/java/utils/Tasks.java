@@ -147,6 +147,31 @@ public class Tasks {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
 
+    public static List<JsonNode> getTaskStatuses(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        List<JsonNode> result = new ArrayList<>();
+        List<JsonNode> tasks=getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+
+        for (JsonNode task : tasks) {
+            int taskId = task.get("id").asInt();
+            // API to get history of task
+            String taskStatusUrl = TAIGA_API_ENDPOINT + "/task-statuses/" + taskId;
+
+            try {
+                HttpGet request = new HttpGet(taskStatusUrl);
+                request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+                request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+                String responseJson = HTTPRequest.sendHttpRequest(request);
+
+                JsonNode historyData = objectMapper.readTree(responseJson);
+                result.add(historyData);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
