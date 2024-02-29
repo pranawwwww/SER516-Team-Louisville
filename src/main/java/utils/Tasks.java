@@ -174,4 +174,23 @@ public class Tasks {
         }
         return result;
     }
+
+    public static JsonNode getIndividualTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String taskId){
+
+        JsonNode taskHistory = null;
+        String endpoint = TAIGA_API_ENDPOINT + "/history/task/" + taskId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+        System.out.println(responseJson);
+
+        try {
+            taskHistory = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return taskHistory;
+    }
 }
