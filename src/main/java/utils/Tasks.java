@@ -73,8 +73,8 @@ public class Tasks {
         return new int[]{cycleTime, closedTasks};
     }
 
-    public static List<JsonNode> getTaskHistory(List<JsonNode> tasks, String authToken, String TAIGA_API_ENDPOINT) {
-        List<JsonNode> result = new ArrayList<>();
+    public static List<Integer> getTaskHistory(List<JsonNode> tasks, String authToken, String TAIGA_API_ENDPOINT) {
+        List<Integer> result = new ArrayList<>(List.of(0, 0));
 
 
         for (JsonNode task : tasks) {
@@ -91,12 +91,11 @@ public class Tasks {
                 String responseJson = HTTPRequest.sendHttpRequest(request);
 
                 JsonNode historyData = objectMapper.readTree(responseJson);
-                result.add(historyData);
-//                LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
+                LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
 
-//                int[] cycleTimeAndClosedTasks = calculateCycleTime(historyData, finishedDate);
-//                result.set(0, result.get(0) + cycleTimeAndClosedTasks[0]);
-//                result.set(1, result.get(1) + cycleTimeAndClosedTasks[1]);
+                int[] cycleTimeAndClosedTasks = calculateCycleTime(historyData, finishedDate);
+                result.set(0, result.get(0) + cycleTimeAndClosedTasks[0]);
+                result.set(1, result.get(1) + cycleTimeAndClosedTasks[1]);
             } catch (Exception e) {
                 e.printStackTrace();
             }
