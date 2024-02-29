@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Tasks {
@@ -73,8 +74,8 @@ public class Tasks {
         return new int[]{cycleTime, closedTasks};
     }
 
-    public static List<Integer> getTaskHistory(List<JsonNode> tasks, String authToken, String TAIGA_API_ENDPOINT) {
-        List<Integer> result = new ArrayList<>(List.of(0, 0));
+    public static List<JsonNode> getTaskHistory(List<JsonNode> tasks, String authToken, String TAIGA_API_ENDPOINT) {
+        List<JsonNode> result = new ArrayList<>();
 
 
         for (JsonNode task : tasks) {
@@ -91,11 +92,12 @@ public class Tasks {
                 String responseJson = HTTPRequest.sendHttpRequest(request);
 
                 JsonNode historyData = objectMapper.readTree(responseJson);
-                LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
+                result.add(historyData);
+//                LocalDateTime finishedDate = parseDateTime(task.get("finished_date").asText());
 
-                int[] cycleTimeAndClosedTasks = calculateCycleTime(historyData, finishedDate);
-                result.set(0, result.get(0) + cycleTimeAndClosedTasks[0]);
-                result.set(1, result.get(1) + cycleTimeAndClosedTasks[1]);
+//                int[] cycleTimeAndClosedTasks = calculateCycleTime(historyData, finishedDate);
+//                result.set(0, result.get(0) + cycleTimeAndClosedTasks[0]);
+//                result.set(1, result.get(1) + cycleTimeAndClosedTasks[1]);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -170,6 +172,25 @@ public class Tasks {
 
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        List<JsonNode> list = SprintUtils.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectId);
+        List<JsonNode> tasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+        List<JsonNode> result = new ArrayList<>();
+        String creationDate = "";
+        for(JsonNode node: list){
+            if(node.get("name").asText().equals(sprint)){
+                creationDate = node.get("estimated_start").asText();
+                break;
+            }
+        }
+        for(JsonNode node: tasks){
+            if(node.get("created_date").asText().substring(0,10).equals(creationDate)){
+                result.add(node);
             }
         }
         return result;
