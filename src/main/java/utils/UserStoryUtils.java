@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -84,5 +85,42 @@ public class UserStoryUtils {
             e.printStackTrace();
         }
         return statList;
+    }
+
+    public static JsonNode getUserStoryHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String usId){
+
+        String endpoint = TAIGA_API_ENDPOINT + "/history/userstory/" + usId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+        System.out.println(responseJson);
+
+        JsonNode usNode = null;
+        try {
+            usNode = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usNode;
+    }
+    public static JsonNode getIssueHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String issueId){
+
+        JsonNode issueHistory = null;
+        String endpoint = TAIGA_API_ENDPOINT + "/history/issues/" + issueId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+        System.out.println(responseJson);
+
+        try {
+            issueHistory = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return issueHistory;
     }
 }
