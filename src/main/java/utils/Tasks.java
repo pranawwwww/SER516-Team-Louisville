@@ -18,11 +18,12 @@ public class Tasks {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-    public static List<JsonNode> getClosedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
+    public static List<JsonNode> getClosedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint) {
+
 
         // API to get list of all tasks in a project.
-        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project=" + projectId;
-
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
         HttpGet request = new HttpGet(endpoint);
         request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");

@@ -26,8 +26,8 @@ public class CycleTime {
     }
 
 
-    public static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT){
-        List<JsonNode> tasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT);
+    public static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+        List<JsonNode> tasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT,sprint);
         Map<String, List<Pair<String, Integer>>> cycleTime = calculateAndPrintCycleTime(tasks,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Pair<String, Integer>>> sortedCycleTime = new TreeMap<>(cycleTime);
         Map<String, List<Pair<String, Integer>>> orderedCycleTime = new LinkedHashMap<>(sortedCycleTime);

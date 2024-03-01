@@ -125,7 +125,7 @@ public class CycleTimeGUI extends Application {
         xAxis.setTickLabelRotation(90);
 
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT);
+        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT,sprint);
 
         computeCycleTime = 0.0f;
         numberTaskCompleted =0;
