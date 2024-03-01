@@ -192,22 +192,35 @@ public class Tasks {
         }
         return taskHistory;
     }
-    public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
-        List<JsonNode> list = SprintUtils.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectId);
+    public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint, String date){
         List<JsonNode> tasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
         List<JsonNode> result = new ArrayList<>();
-        String creationDate = "";
-        for(JsonNode node: list){
-            if(node.get("name").asText().equals(sprint)){
-                creationDate = node.get("estimated_start").asText();
-                break;
-            }
-        }
         for(JsonNode node: tasks){
-            if(node.get("created_date").asText().substring(0,10).equals(creationDate)){
+            if(node.get("created_date").asText().substring(0,10).equals(date)){
                 result.add(node);
             }
         }
+
         return result;
+    }
+
+    public static int getDeletedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        SprintData sd = SprintUtils.getSprintDetails(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        JsonNode dates = sd.getProgressNode();
+        int deletedTasks = 0, totalTasks = 0;
+        List<JsonNode> datesList = new ArrayList<>();
+        if (dates.isArray()) {
+            for (JsonNode jsonNode : dates) {
+                datesList.add(jsonNode);
+            }
+        }
+        if(datesList!=null){
+            for(int i=0;i<datesList.size();i++){
+                String date=datesList.get(i).get("day").asText();
+                totalTasks+=getTasksByCreatedDate(projectId,authToken,TAIGA_API_ENDPOINT,sprint,date).size();
+            }
+        }
+        deletedTasks = Math.abs(getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint).size() - totalTasks);
+        return deletedTasks;
     }
 }
