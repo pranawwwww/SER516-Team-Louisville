@@ -25,13 +25,6 @@ public class TaskChurnGUI extends Application {
     public TaskChurnGUI(String authToken, String taigaApiEndpoint, int projectID, String selectedSprint) {
         this.selectedSprint = selectedSprint;
         this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, selectedSprint);
-        try {
-            if(this.taskChurnMap==null){
-                throw new NoSuchElementException();
-            }
-        } catch (NoSuchElementException ex) {
-            showAlert("Error", "Please Try a Sprint which has been started.");
-        }
     }
 
     public static void main(String[] args) {
@@ -40,6 +33,11 @@ public class TaskChurnGUI extends Application {
 
     @Override
     public void start(Stage stage) {
+        try{
+            if(this.taskChurnMap==null){
+                throw new NoSuchElementException();
+            }
+        
         stage.setTitle("Task Churn Graph for " + selectedSprint);
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -84,6 +82,10 @@ public class TaskChurnGUI extends Application {
         Scene scene = new Scene(lineGraph, 800, 600);
         stage.setScene(scene);
         stage.show();
+    }
+    catch (NoSuchElementException ex) {
+        showAlert("Error", "Please Try a Sprint which has been started.");
+    }
     }
 
     private void showAlert(String title, String content) {
