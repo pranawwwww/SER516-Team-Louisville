@@ -8,9 +8,23 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class TaskDefectDensityGUI extends Application {
+    private int numberOfDeletedTasks;
+    private int numberOfUnfinishedTasks;
+    private int numberOfTotalTasks;
+    private float taskDefectDensity;
+    private Label valueTDD;
+
+    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, float taskDefectDensity){
+        this.numberOfDeletedTasks = deletedTasks;
+        this.numberOfUnfinishedTasks = unfinishedTasks;
+        this.numberOfTotalTasks = totalTasks;
+        this.taskDefectDensity = taskDefectDensity;
+        
+    }
 
     @Override
     public void start(Stage stage) {
@@ -33,6 +47,13 @@ public class TaskDefectDensityGUI extends Application {
             });
         }
 
+        Label taskDefectDensityValue = new Label("Task Defect Density (in percentage): ");
+        taskDefectDensityValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        valueTDD = new Label("0");
+        valueTDD.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        valueTDD.setText(String.format("%.2f", this.taskDefectDensity));
+
         Scene scene = new Scene(pieChart, 800, 600);
         stage.setScene(scene);
 
@@ -40,11 +61,13 @@ public class TaskDefectDensityGUI extends Application {
     }
 
     private ObservableList<PieChart.Data> getChartData() {
+
+        
         //Just an example task defect density visualization - to be finished with data from API calls
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-                new PieChart.Data("Unfinished Tasks", 30),
-                new PieChart.Data("Removed Tasks", 25),
-                new PieChart.Data("Other Tasks", 45)
+                new PieChart.Data("Unfinished Tasks", numberOfUnfinishedTasks),
+                new PieChart.Data("Removed Tasks", numberOfDeletedTasks),
+                new PieChart.Data("Finished Tasks", numberOfTotalTasks - numberOfDeletedTasks-numberOfUnfinishedTasks)
         );
 
         return pieChartData;

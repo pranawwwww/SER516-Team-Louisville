@@ -10,6 +10,7 @@ import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
 import TaskChurn.TaskChurnGUI;
+import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
 import com.fasterxml.jackson.databind.JsonNode;
 import javafx.collections.FXCollections;
@@ -96,7 +97,8 @@ public class DisplayPage {
                     bd.start(new Stage());
                     break;
                 case "Task Defect Density":
-                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI();
+                    TaskDefectDensity taskDefectDensity=new TaskDefectDensity(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity());
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":
