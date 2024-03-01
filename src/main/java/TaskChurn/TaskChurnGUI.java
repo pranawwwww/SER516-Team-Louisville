@@ -3,13 +3,17 @@ package TaskChurn;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import javafx.scene.Scene;
-
+import javafx.util.Duration;
 import javafx.application.Application;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
 public class TaskChurnGUI extends Application {
@@ -19,8 +23,15 @@ public class TaskChurnGUI extends Application {
     private String selectedSprint;
 
     public TaskChurnGUI(String authToken, String taigaApiEndpoint, int projectID, String selectedSprint) {
-        this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, selectedSprint);
         this.selectedSprint = selectedSprint;
+        this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, selectedSprint);
+        try {
+            if(this.taskChurnMap==null){
+                throw new NoSuchElementException();
+            }
+        } catch (NoSuchElementException ex) {
+            showAlert("Error", "Please Try a Sprint which has been started.");
+        }
     }
 
     public static void main(String[] args) {
@@ -45,7 +56,19 @@ public class TaskChurnGUI extends Application {
         // Add data to the series
         taskChurnMap.forEach((date, churn) -> {
             long daysBetween = ChronoUnit.DAYS.between(startDate, date);
-            series.getData().add(new XYChart.Data<>(daysBetween, churn));
+            XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(daysBetween, churn);
+
+            Tooltip tooltip = new Tooltip("Date: " + date.toString() + "\nChurn: " + churn + "%");
+            tooltip.setShowDelay(Duration.seconds(0));
+            Tooltip.install(dataPoint.getNode(), tooltip);
+
+            dataPoint.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip.install(newNode, tooltip);
+                }
+            });
+
+            series.getData().add(dataPoint);
         });
 
         lineGraph.getData().add(series);
@@ -61,5 +84,13 @@ public class TaskChurnGUI extends Application {
         Scene scene = new Scene(lineGraph, 800, 600);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
