@@ -175,22 +175,22 @@ public class Tasks {
         return result;
     }
 
-    public static JsonNode getIndividualTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String taskId){
-
-        JsonNode taskHistory = null;
-        String endpoint = TAIGA_API_ENDPOINT + "/history/task/" + taskId;
-        HttpGet request = new HttpGet(endpoint);
-        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
-        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-
-        String responseJson = HTTPRequest.sendHttpRequest(request);
-        System.out.println(responseJson);
-
-        try {
-            taskHistory = objectMapper.readTree(responseJson);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        List<JsonNode> list = SprintUtils.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectId);
+        List<JsonNode> tasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+        List<JsonNode> result = new ArrayList<>();
+        String creationDate = "";
+        for(JsonNode node: list){
+            if(node.get("name").asText().equals(sprint)){
+                creationDate = node.get("estimated_start").asText();
+                break;
+            }
         }
-        return taskHistory;
+        for(JsonNode node: tasks){
+            if(node.get("created_date").asText().substring(0,10).equals(creationDate)){
+                result.add(node);
+            }
+        }
+        return result;
     }
 }
