@@ -11,16 +11,28 @@ public class TaskDefectDensity{
 
     private List<JsonNode> unfinishedTasks = new ArrayList<>();
     private List<JsonNode> totalTasks = new ArrayList<>();
-    public List<JsonNode> getUnfinishedTasks() {
-        return unfinishedTasks;
+    private int numberOfDeletedTasks;
+    private float taskDefectDensity;
+    public float getTaskDefectDensity() {
+        return this.taskDefectDensity;
     }
 
-    public List<JsonNode> getTotalTasks() {
-        return totalTasks;
+    public int getNumberOfTotalTasks(){
+        return this.totalTasks.size();
     }
 
-    TaskDefectDensity(List<JsonNode> totalTasks, List<JsonNode> unfinishedTasks, String authToken, String TAIGA_API_ENDPOINT, int projectId, String sprint ){
+    public int getNumberOfUnfinishedTasks(){
+        return this.unfinishedTasks.size();
+    }
+
+    public int getNumberOfDeletedTasks(){
+        return this.numberOfDeletedTasks;
+    }
+
+    public TaskDefectDensity(String authToken, String TAIGA_API_ENDPOINT, int projectId, String sprint ){
         this.totalTasks = Tasks.getAllTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
         this.unfinishedTasks = Tasks.getUnfinishedTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
+        this.numberOfDeletedTasks= Tasks.getDeletedTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
+        this.taskDefectDensity = (( this.unfinishedTasks.size() + numberOfDeletedTasks ) / totalTasks.size());
     }
 }
