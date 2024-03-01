@@ -3,22 +3,23 @@ package TaskDefectDensity;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class TaskDefectDensityGUI extends Application {
     private int numberOfDeletedTasks;
     private int numberOfUnfinishedTasks;
     private int numberOfTotalTasks;
-    private float taskDefectDensity;
+    private double taskDefectDensity;
     private Label valueTDD;
 
-    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, float taskDefectDensity){
+    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity){
         this.numberOfDeletedTasks = deletedTasks;
         this.numberOfUnfinishedTasks = unfinishedTasks;
         this.numberOfTotalTasks = totalTasks;
@@ -54,7 +55,15 @@ public class TaskDefectDensityGUI extends Application {
         valueTDD.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         valueTDD.setText(String.format("%.2f", this.taskDefectDensity));
 
-        Scene scene = new Scene(pieChart, 800, 600);
+        HBox taskDefectDensity = new HBox(10);
+        taskDefectDensity.getChildren().addAll(taskDefectDensityValue, valueTDD);
+        taskDefectDensity.setAlignment(Pos.CENTER);
+
+        VBox root = new VBox(10);
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().addAll(taskDefectDensity, pieChart);
+
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
 
         stage.show();

@@ -12,8 +12,8 @@ public class TaskDefectDensity{
     private List<JsonNode> unfinishedTasks = new ArrayList<>();
     private List<JsonNode> totalTasks = new ArrayList<>();
     private int numberOfDeletedTasks;
-    private float taskDefectDensity;
-    public float getTaskDefectDensity() {
+    private double taskDefectDensity;
+    public double getTaskDefectDensity() {
         return this.taskDefectDensity;
     }
 
@@ -33,6 +33,7 @@ public class TaskDefectDensity{
         this.totalTasks = Tasks.getAllTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
         this.unfinishedTasks = Tasks.getUnfinishedTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
         this.numberOfDeletedTasks= Tasks.getDeletedTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
-        this.taskDefectDensity = (( this.unfinishedTasks.size() + numberOfDeletedTasks ) / totalTasks.size());
+        this.taskDefectDensity = ((double)( this.unfinishedTasks.size() + this.numberOfDeletedTasks )/this.totalTasks.size()) * 100;
+        System.out.println("TDD" + this.taskDefectDensity);
     }
 }
