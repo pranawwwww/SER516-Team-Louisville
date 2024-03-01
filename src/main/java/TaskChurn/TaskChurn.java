@@ -78,7 +78,7 @@ public class TaskChurn {
         allKeys.addAll(taskModifiedCount.keySet());
         for (LocalDate date : allKeys) {
 
-            Float churn = (((float)((taskCount.getOrDefault(date,0) - baseline) + taskModifiedCount.getOrDefault(date,0))/(float)dayOne)*100);
+            Float churn = (((float)(Math.abs(taskCount.getOrDefault(date,0) - baseline) + taskModifiedCount.getOrDefault(date,0))/(float)dayOne)*100);
             if(taskCount.get(date) != null){
                 baseline = taskCount.get(date);
             }
@@ -89,6 +89,7 @@ public class TaskChurn {
             e.printStackTrace();
         }
         return taskChurn;
+        
     }
     private static LocalDateTime parseDateTime(String dateTimeString) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
