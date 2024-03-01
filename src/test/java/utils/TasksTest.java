@@ -33,5 +33,27 @@ class TasksTest {
         assertEquals(1, unfinishedTasks.get(0).get("id").asInt());
         assertEquals(false, unfinishedTasks.get(0).get("is_closed").asBoolean());
     }
+    @Test
+    void testGetAllTasks() {
+        // Mocking parameters
+        int projectId = 1525366;
+        String authToken = Authentication.authenticate("louisville_test", "SER516");
+        String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+        String sprint = "Sprint 1";
 
+        // Mocking the HTTP request/response
+        String mockedResponseJson = "[{\"id\":1,\"name\":\"Task 1\"},{\"id\":2,\"name\":\"Task 2\"},{\"id\":3,\"name\":\"Task 3\"}]";
+
+        Mockito.mockStatic(HTTPRequest.class);
+        Mockito.when(HTTPRequest.sendHttpRequest(ArgumentMatchers.any(HttpGet.class)))
+                .thenReturn(mockedResponseJson);
+
+        // Calling the method under test
+        List<JsonNode> allTasks = Tasks.getAllTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
+
+        // Verifying the result
+        assertEquals(3, allTasks.size());
+         assertEquals(1, allTasks.get(0).get("id").asInt());
+         assertEquals("Task 1", allTasks.get(0).get("name").asText());
+    }
 }
