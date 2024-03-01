@@ -175,6 +175,23 @@ public class Tasks {
         return result;
     }
 
+    public static JsonNode getIndividualTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String taskId){
+
+        JsonNode taskHistory = null;
+        String endpoint = TAIGA_API_ENDPOINT + "/history/task/" + taskId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            taskHistory = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return taskHistory;
+    }
     public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
         List<JsonNode> list = SprintUtils.getMilestoneList(authToken,TAIGA_API_ENDPOINT,projectId);
         List<JsonNode> tasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
