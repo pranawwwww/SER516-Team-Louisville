@@ -35,7 +35,7 @@ public class LeadTime {
             int last_date = Integer.parseInt(lastDate.substring(8));
             LocalDateTime startDate = LocalDate.of(start_year, start_month, start_date).atTime(00, 00, 00);
             LocalDateTime endDate = LocalDate.of(last_year, last_month, last_date).atTime(00, 00, 00);
-            List<JsonNode> closedTasks = Tasks.getClosedTasks(projectId, authToken, endpoint);
+            List<JsonNode> closedTasks = Tasks.getClosedTasks(projectId, authToken, endpoint,sprint);
     
             for (JsonNode task : closedTasks) {
                 Map<String, Object> data = new HashMap<>();

@@ -2,6 +2,7 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import BurnDown.BurnDownDataPoint;
 import BurnDown.Burndown;
@@ -10,7 +11,9 @@ import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
 import TaskChurn.TaskChurnGUI;
+import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
+import com.fasterxml.jackson.databind.JsonNode;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -52,10 +55,10 @@ public class DisplayPage {
 
         // Dropdown menu to select the sprint
         ComboBox<String> sprintSelector = new ComboBox<>();
-        sprintSelector.setPromptText("Fetch all Sprints");
+        sprintSelector.setPromptText("select a sprint");
 
         // Button to trigger sprint selection
-        Button selectSprintBtn = new Button("Select a Sprint");
+        Button selectSprintBtn = new Button("Fetch all Sprints");
         selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
 
         // Dropdown menu to select the metric
@@ -95,11 +98,12 @@ public class DisplayPage {
                     bd.start(new Stage());
                     break;
                 case "Task Defect Density":
-                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI();
+                    TaskDefectDensity taskDefectDensity=new TaskDefectDensity(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint());
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":
-                    TaskChurnGUI tc = new TaskChurnGUI();
+                    TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     tc.start(new Stage());
                     break;
                 default:
@@ -117,9 +121,17 @@ public class DisplayPage {
     }
 
     private static void selectSprint(String authToken, String slugURL, ComboBox<String> sprintSelector) {
-        projectID = Project.getProjectId(authToken, GlobalData.getTaigaURL(), slugURL);
-        SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
-        List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
-        sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+        try{
+            projectID = Project.getProjectId(authToken, GlobalData.getTaigaURL(), slugURL);
+            if(projectID == -1){
+                throw new NoSuchElementException();
+            }
+            SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
+            List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
+            sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+        } catch (NoSuchElementException exception){
+            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
+        }
+
     }
 }

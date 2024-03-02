@@ -1,4 +1,5 @@
 package utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,11 +18,12 @@ public class Tasks {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-    public static List<JsonNode> getClosedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
+    public static List<JsonNode> getClosedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint) {
+
 
         // API to get list of all tasks in a project.
-        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project=" + projectId;
-
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
         HttpGet request = new HttpGet(endpoint);
         request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -100,5 +102,126 @@ public class Tasks {
             }
         }
         return result;
+    }
+    public static List<JsonNode> getAllTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+
+        int milestoneId = SprintUtils.getSprintIdByName(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone="+milestoneId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> allTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                allTasks.add(taskNode);
+            }
+            return allTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public static List<JsonNode> getUnfinishedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint) {
+        int milestoneId = SprintUtils.getSprintIdByName(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?milestone=" + milestoneId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> unfinishedTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                JsonNode isClosedNode = taskNode.get("is_closed");
+                if (isClosedNode != null && isClosedNode.isBoolean() && !isClosedNode.asBoolean()) {
+                    unfinishedTasks.add(taskNode);
+                }
+            }
+            return unfinishedTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public static List<JsonNode> getTaskStatuses(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        List<JsonNode> result = new ArrayList<>();
+        List<JsonNode> tasks=getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+
+        for (JsonNode task : tasks) {
+            int taskId = task.get("id").asInt();
+            // API to get history of task
+            String taskStatusUrl = TAIGA_API_ENDPOINT + "/task-statuses/" + taskId;
+
+            try {
+                HttpGet request = new HttpGet(taskStatusUrl);
+                request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+                request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+                String responseJson = HTTPRequest.sendHttpRequest(request);
+
+                JsonNode historyData = objectMapper.readTree(responseJson);
+                result.add(historyData);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static JsonNode getIndividualTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT, String taskId){
+
+        JsonNode taskHistory = null;
+        String endpoint = TAIGA_API_ENDPOINT + "/history/task/" + taskId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            taskHistory = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return taskHistory;
+    }
+    public static List<JsonNode> getTasksByCreatedDate(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint, String date){
+        List<JsonNode> tasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+        List<JsonNode> result = new ArrayList<>();
+        for(JsonNode node: tasks){
+            if(node.get("created_date").asText().substring(0,10).equals(date)){
+                result.add(node);
+            }
+        }
+
+        return result;
+    }
+
+    public static int getDeletedTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        SprintData sd = SprintUtils.getSprintDetails(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+        JsonNode dates = sd.getProgressNode();
+        int deletedTasks = 0, totalTasks = 0;
+        List<JsonNode> datesList = new ArrayList<>();
+        if (dates.isArray()) {
+            for (JsonNode jsonNode : dates) {
+                datesList.add(jsonNode);
+            }
+        }
+        if(datesList!=null){
+            for(int i=0;i<datesList.size();i++){
+                String date=datesList.get(i).get("day").asText();
+                totalTasks+=getTasksByCreatedDate(projectId,authToken,TAIGA_API_ENDPOINT,sprint,date).size();
+            }
+        }
+        deletedTasks = Math.abs(getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint).size() - totalTasks);
+        return deletedTasks;
     }
 }

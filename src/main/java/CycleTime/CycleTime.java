@@ -26,15 +26,12 @@ public class CycleTime {
     }
 
 
-    public static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT){
-
-        List<JsonNode> tasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT);
+    public static Map<String, List<Pair<String, Integer>>> getMatrixData(int projectId, String authToken, String TAIGA_API_ENDPOINT,String sprint){
+        List<JsonNode> tasks = Tasks.getClosedTasks(projectId, authToken,TAIGA_API_ENDPOINT,sprint);
         Map<String, List<Pair<String, Integer>>> cycleTime = calculateAndPrintCycleTime(tasks,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Pair<String, Integer>>> sortedCycleTime = new TreeMap<>(cycleTime);
         Map<String, List<Pair<String, Integer>>> orderedCycleTime = new LinkedHashMap<>(sortedCycleTime);
-//        for (Map.Entry<String, List<Integer>> entry : orderedCycleTime.entrySet()) {
-//            System.out.println(entry.getKey() + " : " + entry.getValue());
-//        }
+
         return orderedCycleTime;
     }
     private static Map<String, List<Pair<String, Integer>>> calculateAndPrintCycleTime(List<JsonNode> tasks,String authToken,String TAIGA_API_ENDPOINT) {
@@ -59,8 +56,6 @@ public class CycleTime {
                 String date = (""+finishedDate).substring(0, (""+finishedDate).indexOf('T'));
 
                 int[] cycleTimeAndClosedTasks = Tasks.calculateCycleTime(historyData, finishedDate);
-
-                System.out.println("Task ID: " + task.path("subject").asText() + ", Cycle Time: " + cycleTimeAndClosedTasks[0] + " days");
 
                 if (cycleTime.containsKey(date)) {
                     List<Pair<String, Integer>> temp = cycleTime.get(date);

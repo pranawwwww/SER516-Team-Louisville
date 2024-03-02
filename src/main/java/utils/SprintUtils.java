@@ -27,10 +27,11 @@ public class SprintUtils {
     private static List<String> sprints = new ArrayList<>();
     private static JsonNode progressNode;
 
+
     public static List<String> getSprints(){
         return sprints;
     }
-
+    
     public static List<JsonNode> getMilestoneList(String authToken,String TAIGA_API_ENDPOINT,int projectId) {
 
         List<JsonNode> list = new ArrayList<>();
@@ -61,7 +62,7 @@ public class SprintUtils {
 
 
         } catch (Exception e) {
-            System.out.println("no milestones found");
+            e.printStackTrace();
         }
 
         return list;
@@ -109,8 +110,9 @@ public class SprintUtils {
             progressNode = statList.get(statList.size() - 1);
             return new SprintData(start_date, end_date, total_points, progressNode);
         } catch (Exception e) {
-            System.out.println("no Sprint data found");
+            e.printStackTrace();
         }
+
         return null;
     }
 }
