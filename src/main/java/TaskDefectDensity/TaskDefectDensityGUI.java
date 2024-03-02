@@ -15,6 +15,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import utils.AlertPopup;
 
 public class TaskDefectDensityGUI extends Application {
     private int numberOfDeletedTasks;
@@ -80,7 +81,7 @@ public class TaskDefectDensityGUI extends Application {
 
             stage.show();
         } catch (NoSuchElementException exception){
-            showAlert("Error", "Please Try a Sprint which has been started.");
+            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
     }
 
@@ -95,14 +96,6 @@ public class TaskDefectDensityGUI extends Application {
         );
 
         return pieChartData;
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
 }

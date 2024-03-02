@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import utils.AlertPopup;
 import utils.SprintData;
 
 public class BurndownGUI extends Application {
@@ -109,16 +110,8 @@ public class BurndownGUI extends Application {
             this.dataPoints = progress;
         }
         catch(Exception e){
-            showAlert("Error", "Please Try a Sprint which has been started.");
+            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
 
     }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }  
 }

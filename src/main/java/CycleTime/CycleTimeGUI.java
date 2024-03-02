@@ -15,6 +15,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import utils.AlertPopup;
 import utils.SprintData;
 import utils.SprintUtils;
 
@@ -161,16 +162,8 @@ public class CycleTimeGUI extends Application {
             // new CycleTimeGUI(projectID,authToken,sprints);
         }
         catch(Exception e){
-            showAlert("Error", "Please Try a Done Sprint .");
+            AlertPopup.showAlert("Error", "Please Try a Done Sprint .");
         }
 
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

@@ -2,6 +2,7 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import BurnDown.BurnDownDataPoint;
 import BurnDown.Burndown;
@@ -120,9 +121,17 @@ public class DisplayPage {
     }
 
     private static void selectSprint(String authToken, String slugURL, ComboBox<String> sprintSelector) {
-        projectID = Project.getProjectId(authToken, GlobalData.getTaigaURL(), slugURL);
-        SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
-        List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
-        sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+        try{
+            projectID = Project.getProjectId(authToken, GlobalData.getTaigaURL(), slugURL);
+            if(projectID == -1){
+                throw new NoSuchElementException();
+            }
+            SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
+            List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
+            sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+        } catch (NoSuchElementException exception){
+            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
+        }
+
     }
 }
