@@ -16,6 +16,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import utils.AlertPopup;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -90,7 +91,7 @@ public class LeadTimeGUI extends Application {
             seriesList.sort(Comparator.comparing(series -> Double.parseDouble(series.getData().get(0).getXValue())));
 
         } catch (Exception e) {
-            showAlert("Error", "Please Try a Sprint which has been started.");
+            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
         
         return seriesList;
@@ -114,13 +115,5 @@ public class LeadTimeGUI extends Application {
             }
         }
     }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }  
 
 }
