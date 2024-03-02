@@ -115,27 +115,4 @@ public class SprintUtils {
 
         return null;
     }
-    public static int getSprintIdByName(String authToken, String TAIGA_API_ENDPOINT, int projectId, String sprintName) {
-        try {
-            String endpoint = TAIGA_API_ENDPOINT + "/milestones?project=" + projectId;
-            HttpGet request = new HttpGet(endpoint);
-            request.setHeader("Authorization", "Bearer " + authToken);
-            request.setHeader("Content-Type", "application/json");
-
-            String responseJson = HTTPRequest.sendHttpRequest(request);
-
-            JsonNode milestonesNode = objectMapper.readTree(responseJson);
-            for (JsonNode milestone : milestonesNode) {
-                String name = milestone.get("name").asText();
-                if (sprintName.equals(name)) {
-                    return milestone.get("id").asInt();
-                }
-            }
-            System.out.println("Sprint not found!");
-            return -1; // Return -1 if sprint not found
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1; // Return -1 in case of any exception
-        }
-    }
 }
