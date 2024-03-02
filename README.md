@@ -28,9 +28,11 @@ Now, run the project using following command
 ```bash
    mvn compile exec:java -Dexec.mainClass=Main
    ```
-### 3) To Launch GUI
+### 3) To Test
 
-on command line, select option 1 for GUI
+```bash
+   mvn test
+   ```
 
 ### NOTE
 

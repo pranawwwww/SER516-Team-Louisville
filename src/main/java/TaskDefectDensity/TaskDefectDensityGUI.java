@@ -1,11 +1,15 @@
 package TaskDefectDensity;
 
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
@@ -18,55 +22,66 @@ public class TaskDefectDensityGUI extends Application {
     private int numberOfTotalTasks;
     private double taskDefectDensity;
     private Label valueTDD;
+    private boolean validSprint;
 
-    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity){
+    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity, boolean validSprint){
         this.numberOfDeletedTasks = deletedTasks;
         this.numberOfUnfinishedTasks = unfinishedTasks;
         this.numberOfTotalTasks = totalTasks;
         this.taskDefectDensity = taskDefectDensity;
+        this.validSprint = validSprint;
         
     }
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Task Defect Density");
+        try{
 
-        ObservableList<PieChart.Data> pieChartData = getChartData();
+            if(!validSprint){
+                throw new NoSuchElementException();
+            }
 
-        PieChart pieChart = new PieChart(pieChartData);
+            stage.setTitle("Task Defect Density");
 
-        for (PieChart.Data data : pieChart.getData()) {
-            Tooltip tooltip = new Tooltip(String.format("%s: %.2f", data.getName(), data.getPieValue()));
-            Tooltip.install(data.getNode(), tooltip);
+            ObservableList<PieChart.Data> pieChartData = getChartData();
 
-            data.getNode().setOnMouseEntered(event -> {
-                data.getNode().setStyle("-fx-cursor: hand;");
-            });
+            PieChart pieChart = new PieChart(pieChartData);
 
-            data.getNode().setOnMouseExited(event -> {
-                data.getNode().setStyle("");
-            });
+            for (PieChart.Data data : pieChart.getData()) {
+                Tooltip tooltip = new Tooltip(String.format("%s: %.2f", data.getName(), data.getPieValue()));
+                Tooltip.install(data.getNode(), tooltip);
+
+                data.getNode().setOnMouseEntered(event -> {
+                    data.getNode().setStyle("-fx-cursor: hand;");
+                });
+
+                data.getNode().setOnMouseExited(event -> {
+                    data.getNode().setStyle("");
+                });
+            }
+
+            Label taskDefectDensityValue = new Label("Task Defect Density (in percentage): ");
+            taskDefectDensityValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+            valueTDD = new Label("0");
+            valueTDD.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            valueTDD.setText(String.format("%.2f", this.taskDefectDensity));
+
+            HBox taskDefectDensity = new HBox(10);
+            taskDefectDensity.getChildren().addAll(taskDefectDensityValue, valueTDD);
+            taskDefectDensity.setAlignment(Pos.CENTER);
+
+            VBox root = new VBox(10);
+            root.setAlignment(Pos.CENTER);
+            root.getChildren().addAll(taskDefectDensity, pieChart);
+
+            Scene scene = new Scene(root, 800, 600);
+            stage.setScene(scene);
+
+            stage.show();
+        } catch (NoSuchElementException exception){
+            showAlert("Error", "Please Try a Sprint which has been started.");
         }
-
-        Label taskDefectDensityValue = new Label("Task Defect Density (in percentage): ");
-        taskDefectDensityValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-        valueTDD = new Label("0");
-        valueTDD.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        valueTDD.setText(String.format("%.2f", this.taskDefectDensity));
-
-        HBox taskDefectDensity = new HBox(10);
-        taskDefectDensity.getChildren().addAll(taskDefectDensityValue, valueTDD);
-        taskDefectDensity.setAlignment(Pos.CENTER);
-
-        VBox root = new VBox(10);
-        root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(taskDefectDensity, pieChart);
-
-        Scene scene = new Scene(root, 800, 600);
-        stage.setScene(scene);
-
-        stage.show();
     }
 
     private ObservableList<PieChart.Data> getChartData() {
@@ -80,6 +95,14 @@ public class TaskDefectDensityGUI extends Application {
         );
 
         return pieChartData;
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 }
