@@ -13,7 +13,7 @@ import LeadTime.LeadTimeGUI;
 import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
-import com.fasterxml.jackson.databind.JsonNode;
+import TaskExcess.TaskExcessGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -105,6 +105,10 @@ public class DisplayPage {
                 case "Task Churn":
                     TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     tc.start(new Stage());
+                    break;
+                case "Task Excess":
+                    TaskExcessGUI taskExcess = new TaskExcessGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    taskExcess.start(new Stage());
                     break;
                 default:
                     break;
