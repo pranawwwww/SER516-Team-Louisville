@@ -66,7 +66,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
