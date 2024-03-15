@@ -225,7 +225,7 @@ public class Tasks {
         return deletedTasks;
     }
 
-    public List<JsonNode> getNewTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+    public static List<JsonNode> getNewTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
         List<JsonNode> allTasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
         List<JsonNode> newTasks = new ArrayList<>();
         for(JsonNode node: allTasks){
