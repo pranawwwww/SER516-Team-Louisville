@@ -224,4 +224,18 @@ public class Tasks {
         deletedTasks = Math.abs(getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint).size() - totalTasks);
         return deletedTasks;
     }
+
+    public List<JsonNode> getNewTasks(int projectId, String authToken, String TAIGA_API_ENDPOINT, String sprint){
+        List<JsonNode> allTasks = getAllTasks(projectId,authToken,TAIGA_API_ENDPOINT,sprint);
+        List<JsonNode> newTasks = new ArrayList<>();
+        for(JsonNode node: allTasks){
+            JsonNode nodeStatus = node.get("status_extra_info");
+            if(nodeStatus != null && nodeStatus.has("name")){
+                if(nodeStatus.get("name").asText().contains("New")){
+                    newTasks.add(node);
+                }
+            }
+        }
+        return newTasks;
+    }
 }
