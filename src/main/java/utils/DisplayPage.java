@@ -10,6 +10,7 @@ import BurnDown.BurndownGUI;
 import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
+import TaskChurn.TaskChurn;
 import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
