@@ -57,6 +57,7 @@ public class DisplayPage {
         // Dropdown menu to select the sprint
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
+        sprintSelector.getItems().clear();
 
         // Button to trigger sprint selection
         Button selectSprintBtn = new Button("Fetch all Sprints");
@@ -88,7 +89,7 @@ public class DisplayPage {
                     leadTimeGUI.start(new Stage());
                     break;
 				case "Cycle Time":
-					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,selectedSprint);
+					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,slugURL);
                     ct.start(new Stage());
                     break;
                 case "BurnDown Chart":
