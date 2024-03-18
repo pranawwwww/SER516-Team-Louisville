@@ -60,7 +60,7 @@ public class DisplayPage {
 
         // Button to trigger sprint selection
         Button selectSprintBtn = new Button("Fetch all Sprints");
-        selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
+        selectSprintBtn.setOnAction(e -> SprintSelector.selectSprint(authToken, slugInput.getText(), sprintSelector));
 
         // Dropdown menu to select the metric
         ComboBox<String> metricSelector = new ComboBox<>();
