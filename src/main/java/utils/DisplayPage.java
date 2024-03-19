@@ -10,9 +10,11 @@ import BurnDown.BurndownGUI;
 import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
+import TaskChurn.TaskChurn;
 import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
+import TaskExcess.TaskExcessGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -77,7 +79,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -116,6 +118,10 @@ public class DisplayPage {
                 case "Task Churn":
                     TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     tc.start(new Stage());
+                    break;
+                case "Task Excess":
+                    TaskExcessGUI taskExcess = new TaskExcessGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    taskExcess.start(new Stage());
                     break;
                 default:
                     break;
