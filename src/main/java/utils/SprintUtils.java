@@ -37,6 +37,7 @@ public class SprintUtils {
         List<JsonNode> list = new ArrayList<>();
         String endpoint = TAIGA_API_ENDPOINT + "/milestones?project=" + projectId;
         try {
+            sprints.clear();
             HttpClient httpClient = HttpClients.createDefault();
             HttpGet request = new HttpGet(endpoint);
             request.setHeader("Authorization", "Bearer " + authToken);
