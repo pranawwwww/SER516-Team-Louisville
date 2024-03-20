@@ -103,7 +103,7 @@ public class DisplayPage {
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":
-                    TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, slugURL);
                     tc.start(new Stage());
                     break;
                 case "Task Excess":
