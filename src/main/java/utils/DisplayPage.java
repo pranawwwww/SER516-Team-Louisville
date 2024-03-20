@@ -83,9 +83,7 @@ public class DisplayPage {
             System.out.println(selectedOption + " Selected!!");
             switch (selectedOption) {
                 case "Lead Time":
-                    Map<String, Map<String, Object>> leadTimeMap = LeadTime.getLeadTimePerTask(projectID, authToken,
-                            TAIGA_API_ENDPOINT,selectedSprint);
-                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap,selectedSprint);
+                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,slugURL);
                     leadTimeGUI.start(new Stage());
                     break;
 				case "Cycle Time":

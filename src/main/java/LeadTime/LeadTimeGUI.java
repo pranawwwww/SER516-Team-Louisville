@@ -9,14 +9,14 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.AlertPopup;
+import utils.SprintSelector;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -25,14 +25,20 @@ public class LeadTimeGUI extends Application {
 
     private Map<String, Map<String, Object>> dataMap;
     private final StackedBarChart<String, Number> stackedBarChart;
+    private int projectID;
+    private String authToken;
+    private String TAIGA_API_ENDPOINT;
+    private String slugURL;
     private String sprint;
-    public LeadTimeGUI(Map<String, Map<String, Object>> dataMap, String sprint) {
+    private Label sprintDetails = new Label();
+    public LeadTimeGUI(int projectID,String authToken,String TAIGA_API_ENDPOINT,String slugURL) {
         if(this.dataMap != null){
             this.dataMap.clear();
         }
-        this.dataMap = dataMap;
-        this.sprint = sprint;
-
+        this.projectID = projectID;
+        this.authToken = authToken;
+        this.TAIGA_API_ENDPOINT = TAIGA_API_ENDPOINT;
+        this.slugURL = slugURL;
         // Create StackedBarChart
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -42,29 +48,65 @@ public class LeadTimeGUI extends Application {
 
         // Set initial Legend visibility
         stackedBarChart.setLegendVisible(false);
+
+        stackedBarChart.setPrefSize(800, 400);
     }
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Lead time for tasks closed in "+ sprint);
-        Label sprintDetails = new Label("Data for " + sprint);
+        ComboBox<String> sprintSelector = new ComboBox<>();
+        sprintSelector.setPromptText("select a sprint");
+        sprintSelector.getItems().clear();
+        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+
+        sprintSelector.setOnAction(e -> {
+            String selectedSprint = sprintSelector.getValue();
+            if (selectedSprint != null) {
+                this.sprint = selectedSprint;
+                // Reset dataMap to null when a new sprint is selected
+                this.dataMap = null;
+            }
+        });
+
+        Button selectSprintBtn = new Button("Display Chart");
+
+        selectSprintBtn.setOnAction(e -> {
+            String selectedSprint = sprintSelector.getValue();
+            if (selectedSprint != null) {
+                this.sprint = selectedSprint;
+                sprintDetails.setText("Data for " + sprint);
+                stackedBarChart.getData().clear();
+                this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken,TAIGA_API_ENDPOINT,sprint);
+                displayChart(stage);
+            }
+        });
+
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         sprintDetails.setAlignment(Pos.CENTER);
 
+        HBox chartBox = new HBox(stackedBarChart);
+        chartBox.setAlignment(Pos.CENTER);
 
-        ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
-        if(seriesList.isEmpty())
-            return;
-        stackedBarChart.setData(seriesList);
+        // Create the VBox containing the controls and chartBox
+        VBox controlsAndChartBox = new VBox(10, sprintSelector, selectSprintBtn, chartBox);
+        controlsAndChartBox.setAlignment(Pos.CENTER);
 
-        addTooltip(stackedBarChart);
+        Scene scene = new Scene(controlsAndChartBox, 800, 600);
 
-        HBox chartBox = new HBox(15, stackedBarChart);
-        chartBox.setTranslateX(15);
-        Scene scene = new Scene(new HBox(1,sprintDetails, chartBox), 800, 600);
         stage.setScene(scene);
 
         stage.show();
+
+        displayChart(stage);
+    }
+
+    private void displayChart(Stage stage) {
+        ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
+        if (seriesList.isEmpty())
+            return;
+
+        stackedBarChart.setData(seriesList);
+        addTooltip(stackedBarChart);
     }
 
     private ObservableList<XYChart.Series<String, Number>> getSeriesList() {
@@ -93,7 +135,7 @@ public class LeadTimeGUI extends Application {
         } catch (Exception e) {
             AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
-        
+
         return seriesList;
     }
 
@@ -107,7 +149,7 @@ public class LeadTimeGUI extends Application {
                 String startDate = taskData.get("startDate").toString();
                 String endDate = taskData.get("endDate").toString();
 
-                Tooltip tooltip = new Tooltip( "Epic Name: " + epicName + "\nUS Name: " + userStoryName +  "\nTask Name: " 
+                Tooltip tooltip = new Tooltip( "Epic Name: " + epicName + "\nUS Name: " + userStoryName +  "\nTask Name: "
                 + taskName + "\nStart Date: " + startDate + "\nEnd Date: " + endDate);
                 tooltip.setHideOnEscape(true);
                 tooltip.setHideDelay(Duration.seconds(20));
