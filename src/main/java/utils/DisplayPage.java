@@ -10,6 +10,7 @@ import BurnDown.BurndownGUI;
 import CycleTime.CycleTimeGUI;
 import LeadTime.LeadTime;
 import LeadTime.LeadTimeGUI;
+import TaskChurn.TaskChurn;
 import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
@@ -54,12 +55,24 @@ public class DisplayPage {
         TextField slugInput = new TextField();
 
         // Dropdown menu to select the sprint
-        ComboBox<String> sprintSelector = new ComboBox<>();
+        ComboBox<String> sprintSelector = new ComboBox<>();    
         sprintSelector.setPromptText("select a sprint");
+        sprintSelector.getSelectionModel().clearSelection();
+        sprintSelector.setValue(null);
 
         // Button to trigger sprint selection
-        Button selectSprintBtn = new Button("Fetch all Sprints");
-        selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
+        Button selectSprintBtn = new Button("Fetch all Sprints");  
+        selectSprintBtn.setOnAction(e -> {
+            // Clearing the ComboBox
+            sprintSelector.getItems().removeAll(sprintSelector.getItems());
+            // Additional clearing methods if necessary
+            sprintSelector.getSelectionModel().clearSelection();
+            sprintSelector.setValue("");    
+            System.out.println("ComboBox Items: " + sprintSelector.getItems());
+            sprintSelector.setPromptText("select a sprint");
+            selectSprint(authToken, slugInput.getText(), sprintSelector);});  
+        //selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
+        
 
         // Dropdown menu to select the metric
         ComboBox<String> metricSelector = new ComboBox<>();
@@ -131,8 +144,14 @@ public class DisplayPage {
                 throw new NoSuchElementException();
             }
             SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
-            List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
+            List<String> sprints = new ArrayList<>();
+            sprints= SprintUtils.getSprints();
+            
+            sprintSelector.getSelectionModel().clearSelection();
+            sprintSelector.setValue(null);
+            sprintSelector.setPromptText("select a sprint");
             sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+            sprintSelector.layout();
         } catch (NoSuchElementException exception){
             AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
