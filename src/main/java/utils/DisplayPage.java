@@ -79,7 +79,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess","Task Inertia"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -122,6 +122,9 @@ public class DisplayPage {
                 case "Task Excess":
                     TaskExcessGUI taskExcess = new TaskExcessGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     taskExcess.start(new Stage());
+                    break;
+                case "Task Inertia":
+                    //TODO: Implementation
                     break;
                 default:
                     break;
