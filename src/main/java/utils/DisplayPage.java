@@ -15,6 +15,7 @@ import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
 import TaskExcess.TaskExcessGUI;
+import TaskInertia.TaskInertiaGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -112,7 +113,8 @@ public class DisplayPage {
                     taskExcess.start(new Stage());
                     break;
                 case "Task Inertia":
-                    //TODO: Implementation
+                    TaskInertiaGUI taskInertia = new TaskInertiaGUI(projectID, authToken, TAIGA_API_ENDPOINT);
+                    taskInertia.start(new Stage());
                     break;
                 default:
                     break;
