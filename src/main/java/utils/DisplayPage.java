@@ -15,6 +15,7 @@ import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
 import TaskExcess.TaskExcessGUI;
+import TaskInertia.TaskInertiaGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -55,7 +56,7 @@ public class DisplayPage {
         TextField slugInput = new TextField();
 
         // Dropdown menu to select the sprint
-        ComboBox<String> sprintSelector = new ComboBox<>();
+        ComboBox<String> sprintSelector = new ComboBox<>();    
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
 
@@ -63,12 +64,13 @@ public class DisplayPage {
         Button selectSprintBtn = new Button("Fetch all Sprints");
         selectSprintBtn.setOnAction(e -> SprintSelector.selectSprint(authToken, slugInput.getText(), sprintSelector));
 
+
         // Dropdown menu to select the metric
         ComboBox<String> metricSelector = new ComboBox<>();
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess","Task Inertia"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -110,6 +112,10 @@ public class DisplayPage {
                     TaskExcessGUI taskExcess = new TaskExcessGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     taskExcess.start(new Stage());
                     break;
+                case "Task Inertia":
+                    TaskInertiaGUI taskInertia = new TaskInertiaGUI(projectID, authToken, TAIGA_API_ENDPOINT);
+                    taskInertia.start(new Stage());
+                    break;
                 default:
                     break;
             }
@@ -131,8 +137,14 @@ public class DisplayPage {
                 throw new NoSuchElementException();
             }
             SprintUtils.getMilestoneList(authToken, TAIGA_API_ENDPOINT, projectID);
-            List<String> sprints = new ArrayList<>(SprintUtils.getSprints());
+            List<String> sprints = new ArrayList<>();
+            sprints= SprintUtils.getSprints();
+            
+            sprintSelector.getSelectionModel().clearSelection();
+            sprintSelector.setValue(null);
+            sprintSelector.setPromptText("select a sprint");
             sprintSelector.setItems(FXCollections.observableArrayList(sprints));
+            sprintSelector.layout();
         } catch (NoSuchElementException exception){
             AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
