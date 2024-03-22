@@ -101,7 +101,7 @@ public class DisplayPage {
                     break;
                 case "Task Defect Density":
                     TaskDefectDensity taskDefectDensity=new TaskDefectDensity(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint());
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint(), authToken, slugURL);
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":

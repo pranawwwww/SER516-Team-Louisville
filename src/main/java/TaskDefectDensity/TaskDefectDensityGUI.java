@@ -10,12 +10,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
+import utils.SprintSelector;
 
 public class TaskDefectDensityGUI extends Application {
     private int numberOfDeletedTasks;
@@ -24,14 +26,19 @@ public class TaskDefectDensityGUI extends Application {
     private double taskDefectDensity;
     private Label valueTDD;
     private boolean validSprint;
+    private String slugURL;
+    private String authToken;
+    private String sprint;
+    private Label sprintDetails;
 
-    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity, boolean validSprint){
+    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity, boolean validSprint, String authToken, String slugURL){
         this.numberOfDeletedTasks = deletedTasks;
         this.numberOfUnfinishedTasks = unfinishedTasks;
         this.numberOfTotalTasks = totalTasks;
         this.taskDefectDensity = taskDefectDensity;
         this.validSprint = validSprint;
-        
+        this.authToken = authToken;
+        this.slugURL = slugURL;
     }
 
     @Override
@@ -44,6 +51,19 @@ public class TaskDefectDensityGUI extends Application {
 
             stage.setTitle("Task Defect Density");
 
+            ComboBox<String> sprintSelector = new ComboBox<>();
+            sprintSelector.setPromptText("select a sprint");
+            sprintSelector.getItems().clear();
+            SprintSelector.selectSprint(authToken,slugURL, sprintSelector);
+
+            sprintSelector.setOnAction(e -> {
+                String selectedSprint = sprintSelector.getValue();
+                if (selectedSprint != null) {
+                    this.sprint = selectedSprint;
+                } else {
+                    sprintDetails.setText("No sprint selected.");
+                }
+            });
             ObservableList<PieChart.Data> pieChartData = getChartData();
 
             PieChart pieChart = new PieChart(pieChartData);
