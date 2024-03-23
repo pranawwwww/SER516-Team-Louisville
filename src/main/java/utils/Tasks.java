@@ -8,6 +8,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -238,4 +239,37 @@ public class Tasks {
         }
         return newTasks;
     }
+
+    public static List<JsonNode> getAllTasksInProject(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project="+projectId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> allTasks = new ArrayList<>();
+            for (JsonNode taskNode : tasksNode) {
+                allTasks.add(taskNode);
+            }
+            return allTasks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public static List<JsonNode> getTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT){
+        List<JsonNode> allTasks = getAllTasksInProject(projectId, authToken, TAIGA_API_ENDPOINT);
+        List<JsonNode> allTaskHistory = new ArrayList<>();
+        for(JsonNode task : allTasks) {
+            String id = task.path("id").asText();
+            JsonNode taskHistory = Tasks.getIndividualTaskHistory(projectId,authToken,TAIGA_API_ENDPOINT, id);
+            allTaskHistory.add(taskHistory);
+        }
+        return allTaskHistory;
+    }
 }
+

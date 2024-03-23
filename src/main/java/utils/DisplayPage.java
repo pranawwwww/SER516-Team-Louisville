@@ -15,6 +15,7 @@ import TaskChurn.TaskChurnGUI;
 import TaskDefectDensity.TaskDefectDensity;
 import TaskDefectDensity.TaskDefectDensityGUI;
 import TaskExcess.TaskExcessGUI;
+import TaskInertia.TaskInertiaGUI;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -79,7 +80,7 @@ public class DisplayPage {
         metricSelector.setPromptText("Select a metric: ");
         
         // Populate the Combo Box with the Metrics
-        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess"));
+        metricSelector.setItems(FXCollections.observableArrayList("BurnDown Chart", "Cycle Time", "Lead Time","Task Defect Density","Task Churn","Task Excess","Task Inertia"));
         System.out.println("ComboBox Items: " + metricSelector.getItems());
 
 
@@ -122,6 +123,10 @@ public class DisplayPage {
                 case "Task Excess":
                     TaskExcessGUI taskExcess = new TaskExcessGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     taskExcess.start(new Stage());
+                    break;
+                case "Task Inertia":
+                    TaskInertiaGUI taskInertia = new TaskInertiaGUI(projectID, authToken, TAIGA_API_ENDPOINT);
+                    taskInertia.start(new Stage());
                     break;
                 default:
                     break;
