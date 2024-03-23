@@ -34,6 +34,13 @@ Now, run the project using following command
    mvn test
    ```
 
+### 4) To create package and run the jar executable
+
+```bash
+   mvn clean package
+   java -jar target/Louisville-release.jar
+   ```
+
 ### NOTE
 
 In case you don't have Maven installed, please refer to following tutorial
