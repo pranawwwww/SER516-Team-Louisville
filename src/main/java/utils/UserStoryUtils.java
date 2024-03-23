@@ -123,4 +123,26 @@ public class UserStoryUtils {
         }
         return issueHistory;
     }
+    public static List<String> getAllUserStoryIdsInProject(int projectId, String authToken, String TAIGA_API_ENDPOINT){
+        String endpoint = TAIGA_API_ENDPOINT + "/userstories?project="+projectId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+        List<String> userStories = new ArrayList<>();
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+
+            for (JsonNode taskNode : tasksNode) {
+                userStories.add(taskNode.get("id").toString());
+            }
+            return userStories;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }

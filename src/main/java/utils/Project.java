@@ -6,6 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Project {
@@ -59,5 +62,28 @@ public class Project {
         }
 
         return -1;
+    }
+    public static LocalDate getProjectStartDate(String authToken,String TAIGA_API_ENDPOINT, int projectId) {
+        JsonNode projectDetails = null;
+        String endpoint = TAIGA_API_ENDPOINT + "/projects/" + projectId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            projectDetails = objectMapper.readTree(responseJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String createdAt = projectDetails.get("created_date").asText();
+        LocalDate createdDate = parseDateTime(createdAt).toLocalDate();
+        return createdDate;
+    }
+
+        private static LocalDateTime parseDateTime(String dateTimeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        return LocalDateTime.parse(dateTimeString, formatter);
     }
 }

@@ -241,27 +241,33 @@ public class Tasks {
     }
 
     public static List<JsonNode> getAllTasksInProject(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
-        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project="+projectId;
-        HttpGet request = new HttpGet(endpoint);
-        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
-        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        List<String> USIds = UserStoryUtils.getAllUserStoryIdsInProject(projectId, authToken, TAIGA_API_ENDPOINT);
+        
+        List<JsonNode> tasks = new ArrayList<>();
+        for(String usId:USIds){
+            String endpoint = TAIGA_API_ENDPOINT + "/tasks?user_story="+usId;
+            HttpGet request = new HttpGet(endpoint);
+            request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+            request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
-        String responseJson = HTTPRequest.sendHttpRequest(request);
+            String responseJson = HTTPRequest.sendHttpRequest(request);
 
-        try {
-            JsonNode tasksNode = objectMapper.readTree(responseJson);
-            List<JsonNode> allTasks = new ArrayList<>();
-            for (JsonNode taskNode : tasksNode) {
-                allTasks.add(taskNode);
+            try {
+                JsonNode tasksNode = objectMapper.readTree(responseJson);
+
+                for (JsonNode taskNode : tasksNode) {
+                    tasks.add(taskNode);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ArrayList<>();
             }
-            return allTasks;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
         }
+        return tasks;
     }
 
-    public static List<JsonNode> getTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT){
+    public static List<JsonNode> getProjectTaskHistory(int projectId, String authToken, String TAIGA_API_ENDPOINT){
         List<JsonNode> allTasks = getAllTasksInProject(projectId, authToken, TAIGA_API_ENDPOINT);
         List<JsonNode> allTaskHistory = new ArrayList<>();
         for(JsonNode task : allTasks) {
