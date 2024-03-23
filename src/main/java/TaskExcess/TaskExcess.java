@@ -34,7 +34,7 @@ public class TaskExcess {
             }
             this.totalTasks = Tasks.getAllTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
             this.newTasks = Tasks.getNewTasks(projectId, authToken, TAIGA_API_ENDPOINT, sprint);
-            this.taskExcess = (double)(this.newTasks.size()/this.totalTasks.size());
+            this.taskExcess = (double)(this.getNewTasks()/this.getNumberOfTotalTasks());
         } catch (Exception e){
             e.printStackTrace();
         }
