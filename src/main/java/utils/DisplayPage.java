@@ -58,22 +58,12 @@ public class DisplayPage {
         // Dropdown menu to select the sprint
         ComboBox<String> sprintSelector = new ComboBox<>();    
         sprintSelector.setPromptText("select a sprint");
-        sprintSelector.getSelectionModel().clearSelection();
-        sprintSelector.setValue(null);
+        sprintSelector.getItems().clear();
 
         // Button to trigger sprint selection
-        Button selectSprintBtn = new Button("Fetch all Sprints");  
-        selectSprintBtn.setOnAction(e -> {
-            // Clearing the ComboBox
-            sprintSelector.getItems().removeAll(sprintSelector.getItems());
-            // Additional clearing methods if necessary
-            sprintSelector.getSelectionModel().clearSelection();
-            sprintSelector.setValue("");    
-            System.out.println("ComboBox Items: " + sprintSelector.getItems());
-            sprintSelector.setPromptText("select a sprint");
-            selectSprint(authToken, slugInput.getText(), sprintSelector);});  
-        //selectSprintBtn.setOnAction(e -> selectSprint(authToken, slugInput.getText(), sprintSelector));
-        
+        Button selectSprintBtn = new Button("Fetch all Sprints");
+        selectSprintBtn.setOnAction(e -> SprintSelector.selectSprint(authToken, slugInput.getText(), sprintSelector));
+
 
         // Dropdown menu to select the metric
         ComboBox<String> metricSelector = new ComboBox<>();
@@ -95,29 +85,27 @@ public class DisplayPage {
             System.out.println(selectedOption + " Selected!!");
             switch (selectedOption) {
                 case "Lead Time":
-                    Map<String, Map<String, Object>> leadTimeMap = LeadTime.getLeadTimePerTask(projectID, authToken,
-                            TAIGA_API_ENDPOINT,selectedSprint);
-                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(leadTimeMap,selectedSprint);
+                    LeadTimeGUI leadTimeGUI = new LeadTimeGUI(projectID,authToken,TAIGA_API_ENDPOINT,slugURL);
                     leadTimeGUI.start(new Stage());
                     break;
 				case "Cycle Time":
-					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,selectedSprint);
+					CycleTimeGUI ct = new CycleTimeGUI(projectID,authToken,slugURL);
                     ct.start(new Stage());
                     break;
                 case "BurnDown Chart":
                     SprintData stats = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     System.out.println(progress);
-                    BurndownGUI bd = new BurndownGUI(stats,progress,selectedSprint);
+                    BurndownGUI bd = new BurndownGUI(stats,progress,authToken,slugURL);
                     bd.start(new Stage());
                     break;
                 case "Task Defect Density":
                     TaskDefectDensity taskDefectDensity=new TaskDefectDensity(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint());
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint(), authToken, slugURL);
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":
-                    TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    TaskChurnGUI tc = new TaskChurnGUI(authToken, TAIGA_API_ENDPOINT, projectID, slugURL);
                     tc.start(new Stage());
                     break;
                 case "Task Excess":
