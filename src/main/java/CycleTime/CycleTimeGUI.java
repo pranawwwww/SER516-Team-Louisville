@@ -59,6 +59,9 @@ public class CycleTimeGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        Label selectSprintLabel = new Label("Select a sprint ");
+        selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
@@ -111,7 +114,7 @@ public class CycleTimeGUI extends Application {
 
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(sprintSelector,selectSprintBtn,sprintDetails, cycleTime, tasks, scatterChart);
+        root.getChildren().addAll(selectSprintLabel,sprintSelector,selectSprintBtn,sprintDetails, cycleTime, tasks, scatterChart);
         Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cycle Time Chart Display " + sprint);

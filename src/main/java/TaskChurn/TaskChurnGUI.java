@@ -4,16 +4,15 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.util.Duration;
 import javafx.application.Application;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -44,6 +43,9 @@ public class TaskChurnGUI extends Application {
     public void start(Stage stage) {
         stage.setTitle("Task Churn Graph");
 
+        Label selectSprintLabel = new Label("Select a sprint ");
+        selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
@@ -59,8 +61,8 @@ public class TaskChurnGUI extends Application {
         Button displayButton = new Button("Display Chart");
         displayButton.setDisable(true); // Initially disable the button
 
-        HBox controls = new HBox(10, sprintSelector, displayButton);
-        controls.setAlignment(javafx.geometry.Pos.CENTER); // Center align controls
+        HBox controls = new HBox(10, selectSprintLabel,sprintSelector, displayButton);
+        controls.setAlignment(Pos.CENTER);
 
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -71,7 +73,7 @@ public class TaskChurnGUI extends Application {
         lineGraph.setTitle("Task Churn");
 
         VBox root = new VBox(10, controls, lineGraph);
-        root.setAlignment(javafx.geometry.Pos.CENTER); // Center align root
+        root.setAlignment(Pos.CENTER); // Center align root
 
         Scene scene = new Scene(root, 800, 600);
 
