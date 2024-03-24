@@ -1,4 +1,4 @@
-name: Lousville Project CI/CD pipeline
+name: Lousville Project github actions
 
 on:
   push:
