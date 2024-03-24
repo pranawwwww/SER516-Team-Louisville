@@ -96,7 +96,7 @@ public class DisplayPage {
                     SprintData stats = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
                     System.out.println(progress);
-                    BurndownGUI bd = new BurndownGUI(stats,progress,selectedSprint);
+                    BurndownGUI bd = new BurndownGUI(stats,progress,authToken,slugURL);
                     bd.start(new Stage());
                     break;
                 case "Task Defect Density":

@@ -63,7 +63,7 @@ public class TaskDefectDensityGUI extends Application {
                 String selectedSprint = sprintSelector.getValue();
                 if (selectedSprint != null) {
                     this.sprint = selectedSprint;
-                    fetchAndUpdateTaskDefectDensityData(selectedSprint); // New method to fetch data and update the UI
+                    fetchAndUpdateTaskDefectDensityData(selectedSprint);
                 } else {
                     sprintDetails.setText("No sprint selected.");
                 }
@@ -100,7 +100,7 @@ public class TaskDefectDensityGUI extends Application {
         TaskDefectDensity tdd = new TaskDefectDensity(authToken,TAIGA_API_ENDPOINT,projectID,sprint);
         if (!tdd.getValidSprint()) {
             AlertPopup.showAlert("Sprint Validation", "Selected sprint is invalid or has not started.");
-            clearUI(); // Clear or reset the UI components if the sprint is invalid
+            clearUI();
             return;
         }
 
