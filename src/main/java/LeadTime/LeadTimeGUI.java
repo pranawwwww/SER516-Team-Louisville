@@ -19,11 +19,12 @@ import utils.AlertPopup;
 import utils.SprintSelector;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LeadTimeGUI extends Application {
 
-    private Map<String, Map<String, Object>> dataMap;
+    private Map<String, Map<String, Object>> dataMap = new HashMap<>();;
     private final StackedBarChart<String, Number> stackedBarChart;
     private int projectID;
     private String authToken;
@@ -54,6 +55,10 @@ public class LeadTimeGUI extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        Label selectSprintLabel = new Label("Select a sprint ");
+        selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
@@ -77,7 +82,13 @@ public class LeadTimeGUI extends Application {
                 sprintDetails.setText("Data for " + sprint);
                 stackedBarChart.getData().clear();
                 this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken,TAIGA_API_ENDPOINT,sprint);
-                displayChart(stage);
+                if (dataMap.isEmpty()) {
+                    AlertPopup.showAlert("Error", "No data available for the selected sprint.");
+                } else {
+                    displayChart(stage);
+                }
+            } else {
+                AlertPopup.showAlert("Error", "Please select a sprint.");
             }
         });
 
@@ -88,7 +99,7 @@ public class LeadTimeGUI extends Application {
         chartBox.setAlignment(Pos.CENTER);
 
         // Create the VBox containing the controls and chartBox
-        VBox controlsAndChartBox = new VBox(10, sprintSelector, selectSprintBtn, chartBox);
+        VBox controlsAndChartBox = new VBox(10,selectSprintLabel, sprintSelector, selectSprintBtn, chartBox);
         controlsAndChartBox.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(controlsAndChartBox, 800, 600);
@@ -133,7 +144,7 @@ public class LeadTimeGUI extends Application {
             seriesList.sort(Comparator.comparing(series -> Double.parseDouble(series.getData().get(0).getXValue())));
 
         } catch (Exception e) {
-            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
+//            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
 
         return seriesList;

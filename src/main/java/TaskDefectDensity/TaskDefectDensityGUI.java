@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
+import utils.DisplayPage;
 import utils.SprintSelector;
 
 import static utils.DisplayPage.projectID;
@@ -31,25 +32,16 @@ public class TaskDefectDensityGUI extends Application {
     private String sprint;
     private Label sprintDetails;
     private PieChart pieChart;
+    private int projectID;
 
-    public TaskDefectDensityGUI(int deletedTasks, int unfinishedTasks, int totalTasks, double taskDefectDensity, boolean validSprint, String authToken, String slugURL){
-        this.numberOfDeletedTasks = deletedTasks;
-        this.numberOfUnfinishedTasks = unfinishedTasks;
-        this.numberOfTotalTasks = totalTasks;
-        this.taskDefectDensity = taskDefectDensity;
-        this.validSprint = validSprint;
+    public TaskDefectDensityGUI(int projectID, String authToken, String slugURL){
+        this.projectID = projectID;
         this.authToken = authToken;
         this.slugURL = slugURL;
     }
 
     @Override
     public void start(Stage stage) {
-        try{
-
-            if(!validSprint){
-                throw new NoSuchElementException();
-            }
-
             stage.setTitle("Task Defect Density");
 
             ComboBox<String> sprintSelector = new ComboBox<>();
@@ -61,6 +53,7 @@ public class TaskDefectDensityGUI extends Application {
 
             sprintSelector.setOnAction(e -> {
                 String selectedSprint = sprintSelector.getValue();
+                System.out.println("selected sprint: "+selectedSprint);
                 if (selectedSprint != null) {
                     this.sprint = selectedSprint;
                     fetchAndUpdateTaskDefectDensityData(selectedSprint);
@@ -90,9 +83,6 @@ public class TaskDefectDensityGUI extends Application {
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.show();
-        } catch (NoSuchElementException exception){
-            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
-        }
     }
 
     private void fetchAndUpdateTaskDefectDensityData(String sprint) {
