@@ -93,15 +93,11 @@ public class DisplayPage {
                     ct.start(new Stage());
                     break;
                 case "BurnDown Chart":
-                    SprintData stats = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    System.out.println(progress);
-                    BurndownGUI bd = new BurndownGUI(stats,progress,authToken,slugURL);
+                    BurndownGUI bd = new BurndownGUI(projectID,authToken,slugURL);
                     bd.start(new Stage());
                     break;
                 case "Task Defect Density":
-                    TaskDefectDensity taskDefectDensity=new TaskDefectDensity(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(taskDefectDensity.getNumberOfDeletedTasks(), taskDefectDensity.getNumberOfUnfinishedTasks(), taskDefectDensity.getNumberOfTotalTasks(), taskDefectDensity.getTaskDefectDensity(), taskDefectDensity.getValidSprint(), authToken, slugURL);
+                    TaskDefectDensityGUI tdd = new TaskDefectDensityGUI(projectID, authToken, slugURL);
                     tdd.start(new Stage());
                     break;
                 case "Task Churn":

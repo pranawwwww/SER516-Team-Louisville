@@ -19,28 +19,25 @@ import javafx.stage.Stage;
 import utils.AlertPopup;
 import utils.SprintData;
 import utils.SprintSelector;
+import utils.SprintUtils;
 
-import static utils.DisplayPage.projectID;
 public class BurndownGUI extends Application {
     private LineChart<String, Number> lineChart;
     private String sprint;
-    private SprintData sprintData;
-    private List<BurnDownDataPoint> progress;
     private String slugURL;
     private String authToken;
     private Label sprintDetails = new Label("Please select a sprint.");
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
-
+    private int projectID;
     // Additional parameters for Taiga API
     // private final String taigaApiEndpoint;
     // private final String authToken;
     // private final String sprintLastDate;
 
-    public BurndownGUI(SprintData sprintData, List<BurnDownDataPoint> progress, String authToken, String slugURL) {
-        this.sprintData = sprintData;
+    public BurndownGUI(int projectID, String authToken, String slugURL) {
+        this.projectID = projectID;
         this.slugURL = slugURL;
-        this.progress = progress;
         this.authToken = authToken;
     }
      
@@ -81,9 +78,10 @@ public class BurndownGUI extends Application {
     }
 
     private void fetchAndDisplayBurndownData(String selectedSprint) {
-        List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, "https://api.taiga.io/api/v1", projectID, sprint);
+        List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
+        SprintData stats = SprintUtils.getSprintDetails(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
         Platform.runLater(() -> {
-            if (progress == null || progress.isEmpty()) {
+            if (stats == null || progress == null || progress.isEmpty()) {
                 AlertPopup.showAlert("Error", "No data available for the selected sprint or sprint has not started.");
                 clearChart();
             } else {
