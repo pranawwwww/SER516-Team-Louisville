@@ -2,9 +2,8 @@ name: Lousville Project github actions
 
 on:
   push:
-    branches:
-      - main
-      - US-156-cicd
+    tags:
+      - 'v*'
 
 jobs:
   build_and_deploy:
