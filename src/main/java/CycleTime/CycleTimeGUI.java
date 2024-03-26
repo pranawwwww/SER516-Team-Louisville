@@ -5,8 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -17,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
 import utils.SprintData;
+import utils.SprintSelector;
 import utils.SprintUtils;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -44,12 +43,13 @@ public class CycleTimeGUI extends Application {
     private Integer numberTaskCompleted;
     private String sprint;
     private Label sprintDetails;
+    private String slugURL;
 
 
-    public CycleTimeGUI(int projectID,String authToken, String sprint) {
+    public CycleTimeGUI(int projectID,String authToken, String slug) {
         this.projectID = projectID;
         this.authToken = authToken;
-        this.sprint = sprint;
+        this.slugURL = slug;
     }
 
     public static void main(String[] args) {
@@ -58,6 +58,26 @@ public class CycleTimeGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        Label selectSprintLabel = new Label("Select a sprint ");
+        selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        ComboBox<String> sprintSelector = new ComboBox<>();
+        sprintSelector.setPromptText("select a sprint");
+        sprintSelector.getItems().clear();
+        SprintSelector.selectSprint(authToken,slugURL, sprintSelector);
+
+        sprintSelector.setOnAction(e -> {
+            String selectedSprint = sprintSelector.getValue();
+            if (selectedSprint != null) {
+                this.sprint = selectedSprint;
+            } else {
+                sprintDetails.setText("No sprint selected.");
+            }
+        });
+
+        Button selectSprintBtn = new Button("Display Chart");
+
         sprintDetails = new Label("Data for " + sprint);
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
@@ -94,15 +114,26 @@ public class CycleTimeGUI extends Application {
 
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(sprintDetails, cycleTime, tasks, scatterChart);
+        root.getChildren().addAll(selectSprintLabel,sprintSelector,selectSprintBtn,sprintDetails, cycleTime, tasks, scatterChart);
         Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cycle Time Chart Display " + sprint);
         primaryStage.show();
 
-        displayChart();
+        selectSprintBtn.setOnAction(e -> {
+            String selectedSprint = sprintSelector.getValue();
+            this.sprint = selectedSprint;
+            if(sprint!=null) {
+                getSprintData();
+            }
+            displayChart();
+        });
+
     }
     private void displayChart(){
+
+        scatterChart.getData().clear();
+
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         getSprintData();
         int start_year = Integer.parseInt(firstDate.substring(0,4));

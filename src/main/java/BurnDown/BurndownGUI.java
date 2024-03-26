@@ -1,117 +1,137 @@
 package BurnDown;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
 import utils.SprintData;
+import utils.SprintSelector;
+import utils.SprintUtils;
 
 public class BurndownGUI extends Application {
-    private List<BurnDownDataPoint> dataPoints;
     private LineChart<String, Number> lineChart;
     private String sprint;
-    private SprintData sprintData;
-    private List<BurnDownDataPoint> progress;
-
+    private String slugURL;
+    private String authToken;
+    private Label sprintDetails = new Label("Please select a sprint.");
+    private CategoryAxis xAxis;
+    private NumberAxis yAxis;
+    private int projectID;
     // Additional parameters for Taiga API
     // private final String taigaApiEndpoint;
     // private final String authToken;
     // private final String sprintLastDate;
 
-    public BurndownGUI(SprintData sprintData,List<BurnDownDataPoint> progress , String sprint) {
-        this.sprintData = sprintData;
-        this.sprint = sprint;    
-        this.progress = progress;
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Day");
-        yAxis.setLabel("Points");
-
+    public BurndownGUI(int projectID, String authToken, String slugURL) {
+        this.projectID = projectID;
+        this.slugURL = slugURL;
+        this.authToken = authToken;
     }
      
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Burndown Chart for "+ sprint);
-        Label sprintDetails = new Label("Data for " + sprint);
+        stage.setTitle("Burndown Chart");
+
+        ComboBox<String> sprintSelector = new ComboBox<>();
+        sprintSelector.setPromptText("select a sprint");
+        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        sprintDetails.setAlignment(Pos.CENTER);
 
-        getDataPoints();
+        xAxis = new CategoryAxis();
+        yAxis = new NumberAxis();
+        xAxis.setLabel("Day");
+        yAxis.setLabel("Points");
 
-        ObservableList<XYChart.Series<String, Number>> seriesList = getSeriesList();
-        this.lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
-        lineChart.setData(seriesList);
-        lineChart.setLegendVisible(true);
+        this.lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setLegendVisible(false);
 
-        HBox chartBox = new HBox(15, lineChart);
-        chartBox.setTranslateX(15);
-        Scene scene = new Scene(new HBox(1,sprintDetails, chartBox,lineChart), 800, 600);
+        sprintSelector.setOnAction(e -> {
+            String selectedSprint = sprintSelector.getValue();
+            if (selectedSprint != null) {
+                sprint = selectedSprint;
+                fetchAndDisplayBurndownData(selectedSprint);
+            } else {
+                clearChart();
+            }
+        });
+
+        VBox layout = new VBox(10, sprintSelector, sprintDetails, lineChart);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 1000, 1000);
         stage.setScene(scene);
-
         stage.show();
     }
 
-    private ObservableList<XYChart.Series<String, Number>> getSeriesList() {
-        ObservableList<XYChart.Series<String, Number>> seriesList = FXCollections.observableArrayList();
+    private void fetchAndDisplayBurndownData(String selectedSprint) {
+        List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
+        SprintData stats = SprintUtils.getSprintDetails(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
+        Platform.runLater(() -> {
+            if (stats == null || progress == null || progress.isEmpty()) {
+                AlertPopup.showAlert("Error", "No data available for the selected sprint or sprint has not started.");
+                clearChart();
+            } else {
+                updateChart(progress);
+                sprintDetails.setText("Data for " + selectedSprint);
 
-        // Series for Open Points
+                // Update the x-axis categories based on the new data
+                List<String> dayLabels = progress.stream()
+                        .map(BurnDownDataPoint::getDay)
+                        .collect(Collectors.toList());
+                xAxis.setCategories(FXCollections.observableArrayList(dayLabels));
+                xAxis.setTickLabelRotation(90);
+            }
+        });
+    }
+
+    private void clearChart() {
+        this.lineChart.getData().clear();
+        sprintDetails.setText("Invalid or not started sprint.");
+    }
+
+    private void updateChart(List<BurnDownDataPoint> dataPoints) {
+        this.lineChart.getData().clear();
+
         XYChart.Series<String, Number> openPointsSeries = new XYChart.Series<>();
         openPointsSeries.setName("Open Points");
-
-        // Series for Optimal Points
         XYChart.Series<String, Number> optimalPointsSeries = new XYChart.Series<>();
         optimalPointsSeries.setName("Optimal Points");
 
-        // Assuming dataPoints is sorted by date
-        try{
+        // Populate series with data points
+        for (BurnDownDataPoint dataPoint : dataPoints) {
+            XYChart.Data<String, Number> openData = new XYChart.Data<>(dataPoint.getDay(), dataPoint.getOpenPoints());
+            XYChart.Data<String, Number> optimalData = new XYChart.Data<>(dataPoint.getDay(), dataPoint.getOptimalPoints());
 
-            for (int i = 0; i < dataPoints.size(); i++) {
-                BurnDownDataPoint dataPoint = dataPoints.get(i);
+            // Add data to series
+            openPointsSeries.getData().add(openData);
+            optimalPointsSeries.getData().add(optimalData);
 
-                // Open Points
-                XYChart.Data<String, Number> openPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOpenPoints());
-                openPointsSeries.getData().add(openPointsData);
-
-                // Optimal Points
-                XYChart.Data<String, Number> optimalPointsData = new XYChart.Data<>(String.valueOf(i + 1), dataPoint.getOptimalPoints());
-                optimalPointsSeries.getData().add(optimalPointsData);
-            }
-
-            seriesList.add(openPointsSeries);
-            seriesList.add(optimalPointsSeries);
-        } catch ( Exception e ) {
-            e.printStackTrace();
+            // Tooltips for Open Points
+            openData.nodeProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    Tooltip.install(newValue, new Tooltip("Open Points on " + dataPoint.getDay() + ": " + dataPoint.getOpenPoints()));
+                }
+            });
+            optimalData.nodeProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    Tooltip.install(newValue, new Tooltip("Optimal Points on " + dataPoint.getDay() + ": " + dataPoint.getOptimalPoints()));
+                }
+            });
         }
-
-
-        return seriesList;
-
-    }
-
-    private void getDataPoints(){
-
-        try{
-            if(progress == null){
-                throw new IllegalArgumentException("Sprint has not started");
-            }
-            this.dataPoints = progress;
-        }
-        catch(Exception e){
-            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
-        }
-
+        this.lineChart.getData().addAll(openPointsSeries, optimalPointsSeries);
     }
 }
