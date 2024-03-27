@@ -49,6 +49,32 @@ public class Tasks {
             return new ArrayList<>();
         }
     }
+    public static List<JsonNode> getClosedTasksBetweenDates(int projectId, String authToken, String TAIGA_API_ENDPOINT, String startDate, String endDate) {
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project=" + projectId + "&created_date__gte=" + startDate + "&created_date__lte=" + endDate;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+            List<JsonNode> closedTasks = new ArrayList<>();
+
+            for (JsonNode taskNode : tasksNode) {
+                boolean isClosed = taskNode.has("is_closed") && taskNode.get("is_closed").asBoolean();
+                if (isClosed) {
+                    closedTasks.add(taskNode);
+                }
+            }
+
+            return closedTasks;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
     private static LocalDateTime parseDateTime(String dateTimeString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
