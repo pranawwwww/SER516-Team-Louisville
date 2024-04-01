@@ -9,7 +9,6 @@ This project is a Java application for interacting with the Taiga API to perform
 
 ### 1) Clone the repository
 
-
    ```bash
    git clone https://github.com/ser516asu/SER516-Team-Louisville.git
    cd SER516-Team-Louisville
