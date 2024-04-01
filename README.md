@@ -1,5 +1,4 @@
 # SER516-Team-Louisville
-
 ## Taiga API Integration
 
 This project is a Java application for interacting with the Taiga API to perform various task and calculating metrics.
