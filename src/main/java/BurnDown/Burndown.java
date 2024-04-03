@@ -27,26 +27,54 @@ public class Burndown {
     }
 
 
-    public static List<BurnDownDataPoint> getBurnDownProgress(String authToken,String TAIGA_API_ENDPOINT,int projectId,String sprint) {
-        try{
-            if(!progress.isEmpty()){
+    // public static List<BurnDownDataPoint> getBurnDownProgress(String authToken,String TAIGA_API_ENDPOINT,int projectId,String sprint) {
+    //     try{
+    //         if(!progress.isEmpty()){
+    //             progress.clear();
+    //         }
+            
+    //         SprintData sprintData = SprintUtils.getSprintDetails(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
+    //         JsonNode progressNode = sprintData.getProgressNode();
+    //         for(JsonNode node:progressNode){
+    //             String day = node.get("day").asText();
+    //             double openPoints = node.get("open_points").asDouble();
+    //             double optimalPoints = node.get("optimal_points").asDouble();
+    //             progress.add(new BurnDownDataPoint(day,openPoints,optimalPoints));
+    //         }
+    //         return progress;
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+
+    //     return null;
+    // }
+
+    public static List<BurnDownDataPoint> getBurnDownProgress(String authToken, String TAIGA_API_ENDPOINT, int projectId, List<String> sprints) {
+        List<BurnDownDataPoint> aggregatedProgress = new ArrayList<>();
+        try {
+            if (!progress.isEmpty()) {
                 progress.clear();
             }
-            
-            SprintData sprintData = SprintUtils.getSprintDetails(authToken,TAIGA_API_ENDPOINT,projectId,sprint);
-            JsonNode progressNode = sprintData.getProgressNode();
-            for(JsonNode node:progressNode){
-                String day = node.get("day").asText();
-                double openPoints = node.get("open_points").asDouble();
-                double optimalPoints = node.get("optimal_points").asDouble();
-                progress.add(new BurnDownDataPoint(day,openPoints,optimalPoints));
+    
+            for (String sprint : sprints) {
+                SprintData sprintData = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectId, sprint);
+                JsonNode progressNode = sprintData.getProgressNode();
+                for (JsonNode node : progressNode) {
+                    String day = node.get("day").asText();
+                    double openPoints = node.get("open_points").asDouble();
+                    double optimalPoints = node.get("optimal_points").asDouble();
+    
+                    // Aggregate data points here. This is simplified and might require more complex logic
+                    // to properly aggregate points from different sprints.
+                    aggregatedProgress.add(new BurnDownDataPoint(day, openPoints, optimalPoints));
+                }
             }
-            return progress;
+            return aggregatedProgress;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
+    
 
 }
