@@ -59,10 +59,47 @@ public class LeadTimeGUI extends Application {
         Label selectSprintLabel = new Label("Select a sprint ");
         selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
+        RadioButton selectBySprintRadio = new RadioButton("Select by Sprint");
+        RadioButton selectByDatesRadio = new RadioButton("Select by Dates");
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        selectBySprintRadio.setToggleGroup(toggleGroup);
+        selectByDatesRadio.setToggleGroup(toggleGroup);
+
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setPromptText("Select start date");
+
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setPromptText("Select end date");
+
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
         SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+
+        sprintSelector.setVisible(false);
+        startDatePicker.setVisible(false);
+        endDatePicker.setVisible(false);
+
+        VBox radioButtons = new VBox(10);
+        radioButtons.getChildren().addAll(selectBySprintRadio, selectByDatesRadio);
+        radioButtons.setAlignment(Pos.CENTER);
+
+        selectBySprintRadio.setOnAction(e -> {
+            sprintSelector.setVisible(true);
+            startDatePicker.setVisible(false);
+            endDatePicker.setVisible(false);
+        });
+
+        selectByDatesRadio.setOnAction(e -> {
+            sprintSelector.setVisible(false);
+            startDatePicker.setVisible(true);
+            endDatePicker.setVisible(true);
+        });
+
+        selectBySprintRadio.setSelected(true); // Select by sprint by default
+
+        selectBySprintRadio.fire(); // Trigger event to show sprint selector initially
 
         sprintSelector.setOnAction(e -> {
             String selectedSprint = sprintSelector.getValue();
@@ -99,7 +136,7 @@ public class LeadTimeGUI extends Application {
         chartBox.setAlignment(Pos.CENTER);
 
         // Create the VBox containing the controls and chartBox
-        VBox controlsAndChartBox = new VBox(10,selectSprintLabel, sprintSelector, selectSprintBtn, chartBox);
+        VBox controlsAndChartBox = new VBox(10,selectSprintLabel,radioButtons, sprintSelector, startDatePicker, endDatePicker, selectSprintBtn, sprintDetails, chartBox);
         controlsAndChartBox.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(controlsAndChartBox, 800, 600);
