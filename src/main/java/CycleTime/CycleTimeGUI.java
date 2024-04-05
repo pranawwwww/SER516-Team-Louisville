@@ -17,7 +17,8 @@ import utils.AlertPopup;
 import utils.SprintData;
 import utils.SprintSelector;
 import utils.SprintUtils;
-
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import org.apache.commons.lang3.tuple.Pair;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +45,7 @@ public class CycleTimeGUI extends Application {
     private String sprint;
     private Label sprintDetails;
     private String slugURL;
+    private final StringProperty selectedSprint = new SimpleStringProperty();
 
 
     public CycleTimeGUI(int projectID,String authToken, String slug) {
@@ -65,21 +67,27 @@ public class CycleTimeGUI extends Application {
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
-        SprintSelector.selectSprint(authToken,slugURL, sprintSelector);
+        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+
+        sprintSelector.valueProperty().bindBidirectional(selectedSprint);
+
+        sprintDetails = new Label(); // Initialize sprintDetails label without text
+        sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        sprintDetails.setVisible(false); // Hide the label initially
 
         sprintSelector.setOnAction(e -> {
             String selectedSprint = sprintSelector.getValue();
             if (selectedSprint != null) {
                 this.sprint = selectedSprint;
+                sprintDetails.setText("Data for " + sprint); // Update label text
+                sprintDetails.setVisible(true);
             } else {
                 sprintDetails.setText("No sprint selected.");
+                sprintDetails.setVisible(true);
             }
         });
 
         Button selectSprintBtn = new Button("Display Chart");
-
-        sprintDetails = new Label("Data for " + sprint);
-        sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
         this.xAxis = new CategoryAxis();
         this.yAxis = new NumberAxis();
@@ -130,16 +138,15 @@ public class CycleTimeGUI extends Application {
         });
 
     }
-    private void displayChart(){
-
+    private void displayChart() {
         scatterChart.getData().clear();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         getSprintData();
-        int start_year = Integer.parseInt(firstDate.substring(0,4));
-        int last_year = Integer.parseInt(lastDate.substring(0,4));
-        int start_month = Integer.parseInt(firstDate.substring(5,7));
-        int last_month = Integer.parseInt(lastDate.substring(5,7));
+        int start_year = Integer.parseInt(firstDate.substring(0, 4));
+        int last_year = Integer.parseInt(lastDate.substring(0, 4));
+        int start_month = Integer.parseInt(firstDate.substring(5, 7));
+        int last_month = Integer.parseInt(lastDate.substring(5, 7));
         int start_date = Integer.parseInt(firstDate.substring(8));
         int last_date = Integer.parseInt(lastDate.substring(8));
 
@@ -157,10 +164,10 @@ public class CycleTimeGUI extends Application {
         xAxis.setTickLabelRotation(90);
 
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken,TAIGA_API_ENDPOINT,sprint);
+        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken, TAIGA_API_ENDPOINT, selectedSprint.get());
 
         computeCycleTime = 0.0f;
-        numberTaskCompleted =0;
+        numberTaskCompleted = 0;
         for (Map.Entry<String, List<Pair<String, Integer>>> entry : orderedCycleTime.entrySet()) {
             String key = entry.getKey();
             List<Pair<String, Integer>> pairs = entry.getValue();
@@ -177,7 +184,7 @@ public class CycleTimeGUI extends Application {
                 Tooltip.install(data.getNode(), tooltip);
             }
         }
-        computeCycleTime/=numberTaskCompleted;
+        computeCycleTime /= numberTaskCompleted;
         valueCycleTime.setText(String.format("%.2f", computeCycleTime));
         valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
     }
