@@ -1,6 +1,8 @@
 package BurnDown;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import utils.SprintData;
 import utils.SprintUtils;
 
@@ -8,22 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Burndown {
+    private static final ListProperty<BurnDownDataPoint> progress = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private static final StringProperty selectedSprint = new SimpleStringProperty();
 
-
-    private static final Scanner scanner = new Scanner(System.in);
-
-    private static List<BurnDownDataPoint> progress = new ArrayList<>();
-
-    public static List<BurnDownDataPoint> getProgress() {
+    public static ListProperty<BurnDownDataPoint> progressProperty() {
         return progress;
     }
 
-    public static String promptSprint(String prompt){
-        System.out.print(prompt);
-        return scanner.nextLine();
+    public static ObservableList<BurnDownDataPoint> getProgress() {
+        return progress.get();
+    }
+
+    public static void setProgress(ObservableList<BurnDownDataPoint> value) {
+        progress.set(value);
+    }
+
+    public static StringProperty selectedSprintProperty() {
+        return selectedSprint;
+    }
+
+    public static String getSelectedSprint() {
+        return selectedSprint.get();
+    }
+
+    public static void setSelectedSprint(String value) {
+        selectedSprint.set(value);
     }
 
 
