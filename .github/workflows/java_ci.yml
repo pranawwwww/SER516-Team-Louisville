@@ -1,0 +1,31 @@
+name: Louisville Project GitHub Actions
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 17 and Maven
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        maven-version: '3.9.6'  
+
+    - name: Build with Maven 
+      run: mvn clean package -DskipTests
+
+    - name: Upload fat Jar to GitHub Releases
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/Louisville-release.jar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
