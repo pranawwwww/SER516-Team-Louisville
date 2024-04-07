@@ -42,10 +42,8 @@ public class CycleTimeGUI extends Application {
     private Label sprintDetails;
     private String slugURL;
     private final StringProperty selectedSprint = new SimpleStringProperty();
-<<<<<<< HEAD
-=======
+
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
->>>>>>> period-4
 
 
     public CycleTimeGUI(int projectID,String authToken, String slug) {
@@ -82,17 +80,13 @@ public class CycleTimeGUI extends Application {
         sprintSelector.getItems().clear();
         SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> period-4
         sprintSelector.valueProperty().bindBidirectional(selectedSprint);
 
         sprintDetails = new Label(); // Initialize sprintDetails label without text
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         sprintDetails.setVisible(false); // Hide the label initially
-<<<<<<< HEAD
-=======
+
       
         // Initially hide both selectors
         sprintSelector.setVisible(false);
@@ -120,7 +114,6 @@ public class CycleTimeGUI extends Application {
 
         selectBySprintRadio.fire(); // Trigger event to show sprint selector initially
 
->>>>>>> period-4
 
         sprintSelector.setOnAction(e -> {
             String selectedSprint = sprintSelector.getValue();
@@ -131,8 +124,7 @@ public class CycleTimeGUI extends Application {
             } else {
                 sprintDetails.setText("No sprint selected.");
                 sprintDetails.setVisible(true);
-<<<<<<< HEAD
-=======
+
             }
         });
 
@@ -147,7 +139,6 @@ public class CycleTimeGUI extends Application {
             LocalDate selectedEndDate = endDatePicker.getValue();
             if (selectedEndDate != null) {
                 System.out.println("End Date: " + selectedEndDate.format(dateFormatter));
->>>>>>> period-4
             }
         });
 
@@ -223,7 +214,6 @@ public class CycleTimeGUI extends Application {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        getSprintData();
         int start_year = Integer.parseInt(firstDate.substring(0, 4));
         int last_year = Integer.parseInt(lastDate.substring(0, 4));
         int start_month = Integer.parseInt(firstDate.substring(5, 7));
