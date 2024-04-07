@@ -17,21 +17,26 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.AlertPopup;
 import utils.SprintSelector;
-
+import utils.SprintUtils;
+import java.time.LocalDate;
+import utils.SprintData;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LeadTimeGUI extends Application {
 
-    private Map<String, Map<String, Object>> dataMap = new HashMap<>();;
+    private Map<String, Map<String, Object>> dataMap = new HashMap<>();
     private final StackedBarChart<String, Number> stackedBarChart;
     private int projectID;
     private String authToken;
     private String TAIGA_API_ENDPOINT;
     private String slugURL;
     private String sprint;
+    private String firstDate;
+    private String lastDate;
     private Label sprintDetails = new Label();
+
     public LeadTimeGUI(int projectID,String authToken,String TAIGA_API_ENDPOINT,String slugURL) {
         if(this.dataMap != null){
             this.dataMap.clear();
@@ -59,10 +64,47 @@ public class LeadTimeGUI extends Application {
         Label selectSprintLabel = new Label("Select a sprint ");
         selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
+        RadioButton selectBySprintRadio = new RadioButton("Select by Sprint");
+        RadioButton selectByDatesRadio = new RadioButton("Select by Dates");
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        selectBySprintRadio.setToggleGroup(toggleGroup);
+        selectByDatesRadio.setToggleGroup(toggleGroup);
+
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setPromptText("Select start date");
+
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setPromptText("Select end date");
+
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
         SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+
+        sprintSelector.setVisible(false);
+        startDatePicker.setVisible(false);
+        endDatePicker.setVisible(false);
+
+        VBox radioButtons = new VBox(10);
+        radioButtons.getChildren().addAll(selectBySprintRadio, selectByDatesRadio);
+        radioButtons.setAlignment(Pos.CENTER);
+
+        selectBySprintRadio.setOnAction(e -> {
+            sprintSelector.setVisible(true);
+            startDatePicker.setVisible(false);
+            endDatePicker.setVisible(false);
+        });
+
+        selectByDatesRadio.setOnAction(e -> {
+            sprintSelector.setVisible(false);
+            startDatePicker.setVisible(true);
+            endDatePicker.setVisible(true);
+        });
+
+        selectBySprintRadio.setSelected(true); // Select by sprint by default
+
+        selectBySprintRadio.fire(); // Trigger event to show sprint selector initially
 
         sprintSelector.setOnAction(e -> {
             String selectedSprint = sprintSelector.getValue();
@@ -76,19 +118,38 @@ public class LeadTimeGUI extends Application {
         Button selectSprintBtn = new Button("Display Chart");
 
         selectSprintBtn.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            if (selectedSprint != null) {
-                this.sprint = selectedSprint;
-                sprintDetails.setText("Data for " + sprint);
-                stackedBarChart.getData().clear();
-                this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken,TAIGA_API_ENDPOINT,sprint);
-                if (dataMap.isEmpty()) {
-                    AlertPopup.showAlert("Error", "No data available for the selected sprint.");
+            if (selectBySprintRadio.isSelected()) {
+                String selectedSprint = sprintSelector.getValue();
+                if (selectedSprint != null) {
+                    this.sprint = selectedSprint;
+                    sprintDetails.setText("Data for " + sprint);
+                    stackedBarChart.getData().clear();
+                    SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
+                    firstDate = sprintDetails.getStart_date();
+                    lastDate = sprintDetails.getEnd_date();
+                    this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT, firstDate, lastDate);
+                    if (dataMap.isEmpty()) {
+                        AlertPopup.showAlert("Error", "No data available for the selected sprint.");
+                    } else {
+                        displayChart(stage);
+                    }
                 } else {
-                    displayChart(stage);
+                    AlertPopup.showAlert("Error", "Please select a sprint.");
                 }
-            } else {
-                AlertPopup.showAlert("Error", "Please select a sprint.");
+            } else if (selectByDatesRadio.isSelected()) {
+                LocalDate startDate = startDatePicker.getValue();
+                LocalDate endDate = endDatePicker.getValue();
+                if (startDate != null && endDate != null) {
+                    stackedBarChart.getData().clear();
+                    this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT, startDate.toString(), endDate.toString());
+                    if (dataMap.isEmpty()) {
+                        AlertPopup.showAlert("Error", "No data available for the selected date range.");
+                    } else {
+                        displayChart(stage);
+                    }
+                } else {
+                    AlertPopup.showAlert("Error", "Please select both start and end dates.");
+                }
             }
         });
 
@@ -99,7 +160,7 @@ public class LeadTimeGUI extends Application {
         chartBox.setAlignment(Pos.CENTER);
 
         // Create the VBox containing the controls and chartBox
-        VBox controlsAndChartBox = new VBox(10,selectSprintLabel, sprintSelector, selectSprintBtn, chartBox);
+        VBox controlsAndChartBox = new VBox(10,selectSprintLabel,radioButtons, sprintSelector, startDatePicker, endDatePicker, selectSprintBtn, sprintDetails, chartBox);
         controlsAndChartBox.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(controlsAndChartBox, 800, 600);
