@@ -5,11 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -46,6 +42,7 @@ public class CycleTimeGUI extends Application {
     private Label sprintDetails;
     private String slugURL;
     private final StringProperty selectedSprint = new SimpleStringProperty();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     public CycleTimeGUI(int projectID,String authToken, String slug) {
@@ -61,19 +58,60 @@ public class CycleTimeGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Label selectSprintLabel = new Label("Select a sprint ");
-        selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        Label selectByLabel = new Label("Select data by:");
+        selectByLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        RadioButton selectBySprintRadio = new RadioButton("Select by Sprint");
+        RadioButton selectByDatesRadio = new RadioButton("Select by Dates");
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        selectBySprintRadio.setToggleGroup(toggleGroup);
+        selectByDatesRadio.setToggleGroup(toggleGroup);
+
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setPromptText("Select start date");
+
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setPromptText("Select end date");
 
         ComboBox<String> sprintSelector = new ComboBox<>();
-        sprintSelector.setPromptText("select a sprint");
+        sprintSelector.setPromptText("Select a sprint");
         sprintSelector.getItems().clear();
         SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+
 
         sprintSelector.valueProperty().bindBidirectional(selectedSprint);
 
         sprintDetails = new Label(); // Initialize sprintDetails label without text
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         sprintDetails.setVisible(false); // Hide the label initially
+      
+        // Initially hide both selectors
+        sprintSelector.setVisible(false);
+        startDatePicker.setVisible(false);
+        endDatePicker.setVisible(false);
+
+        VBox radioButtons = new VBox(10);
+        radioButtons.getChildren().addAll(selectBySprintRadio, selectByDatesRadio);
+        radioButtons.setAlignment(Pos.CENTER);
+
+        // Event handlers for radio buttons
+        selectBySprintRadio.setOnAction(e -> {
+            sprintSelector.setVisible(true);
+            startDatePicker.setVisible(false);
+            endDatePicker.setVisible(false);
+        });
+
+        selectByDatesRadio.setOnAction(e -> {
+            sprintSelector.setVisible(false);
+            startDatePicker.setVisible(true);
+            endDatePicker.setVisible(true);
+        });
+
+        selectBySprintRadio.setSelected(true); // Select by sprint by default
+
+        selectBySprintRadio.fire(); // Trigger event to show sprint selector initially
+
 
         sprintSelector.setOnAction(e -> {
             String selectedSprint = sprintSelector.getValue();
@@ -87,6 +125,20 @@ public class CycleTimeGUI extends Application {
             }
         });
 
+        startDatePicker.setOnAction(e -> {
+            LocalDate selectedStartDate = startDatePicker.getValue();
+            if (selectedStartDate != null) {
+                System.out.println("Start Date: " + selectedStartDate.format(dateFormatter));
+            }
+        });
+
+        endDatePicker.setOnAction(e -> {
+            LocalDate selectedEndDate = endDatePicker.getValue();
+            if (selectedEndDate != null) {
+                System.out.println("End Date: " + selectedEndDate.format(dateFormatter));
+            }
+        });
+
         Button selectSprintBtn = new Button("Display Chart");
 
         this.xAxis = new CategoryAxis();
@@ -96,7 +148,7 @@ public class CycleTimeGUI extends Application {
 
         xAxis.setLabel("Date");
         yAxis.setLabel("Cycle Time");
-        
+
         scatterChart.setLegendVisible(false);
 
         Label avgCycleTime = new Label("Average Cycle Time in Days: ");
@@ -111,37 +163,54 @@ public class CycleTimeGUI extends Application {
         valueTaskCompleted = new Label("0");
         valueTaskCompleted.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
-
         HBox cycleTime = new HBox(10);
-        cycleTime.getChildren().addAll(avgCycleTime,valueCycleTime);
+        cycleTime.getChildren().addAll(avgCycleTime, valueCycleTime);
         cycleTime.setAlignment(Pos.CENTER);
 
         HBox tasks = new HBox(10);
-        tasks.getChildren().addAll(taskCompleted,valueTaskCompleted);
+        tasks.getChildren().addAll(taskCompleted, valueTaskCompleted);
         tasks.setAlignment(Pos.CENTER);
 
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(selectSprintLabel,sprintSelector,selectSprintBtn,sprintDetails, cycleTime, tasks, scatterChart);
+        root.getChildren().addAll(selectByLabel, radioButtons, sprintSelector, startDatePicker, endDatePicker, selectSprintBtn, sprintDetails, cycleTime, tasks, scatterChart);
         Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cycle Time Chart Display " + sprint);
         primaryStage.show();
 
         selectSprintBtn.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            this.sprint = selectedSprint;
-            if(sprint!=null) {
-                getSprintData();
+            if (selectBySprintRadio.isSelected()) {
+                String selectedSprint = sprintSelector.getValue();
+                if (selectedSprint != null) {
+                    getSprintData(selectedSprint);
+                    displayChart();
+                } else {
+                    AlertPopup.showAlert("Error", "Please select a sprint.");
+                }
+            } else if (selectByDatesRadio.isSelected()) {
+                LocalDate selectedStartDate = startDatePicker.getValue();
+                LocalDate selectedEndDate = endDatePicker.getValue();
+                if (selectedStartDate != null && selectedEndDate != null) {
+                    // Check if start date is before end date
+                    if (selectedStartDate.isAfter(selectedEndDate)) {
+                        AlertPopup.showAlert("Error", "Start date must be before end date.");
+                    } else {
+                        firstDate = selectedStartDate.format(dateFormatter);
+                        lastDate = selectedEndDate.format(dateFormatter);
+                        displayChart();
+                    }
+                } else {
+                    AlertPopup.showAlert("Error", "Please select both start and end dates.");
+                }
             }
-            displayChart();
         });
-
     }
     private void displayChart() {
         scatterChart.getData().clear();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         getSprintData();
         int start_year = Integer.parseInt(firstDate.substring(0, 4));
         int last_year = Integer.parseInt(lastDate.substring(0, 4));
@@ -188,20 +257,15 @@ public class CycleTimeGUI extends Application {
         valueCycleTime.setText(String.format("%.2f", computeCycleTime));
         valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
     }
-    private void getSprintData(){
-
+    private void getSprintData(String selectedSprint) {
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        try{
-            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, sprint);
+        try {
+            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
 
             firstDate = sprintDetails.getStart_date();
             lastDate = sprintDetails.getEnd_date();
-    
-            // new CycleTimeGUI(projectID,authToken,sprints);
+        } catch (Exception e) {
+            AlertPopup.showAlert("Error", "Please try a done sprint.");
         }
-        catch(Exception e){
-            AlertPopup.showAlert("Error", "Please Try a Done Sprint .");
-        }
-
     }
 }
