@@ -1,9 +1,8 @@
 package TaskInertia;
 
-import java.time.LocalDate;
-import java.util.TreeMap;
-
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,19 +11,22 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import utils.Project;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class TaskInertiaGUI extends Application{
+public class TaskInertiaGUI extends Application {
 
-    private int projectId = 0;
-    private String authToken = null;
-    private String endpoint =null;
+    private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
+    private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
+    private int projectId = 0; // Update with actual project ID
+    private String authToken = null; // Update with actual auth token
+    private String endpoint = null; // Update with actual endpoint URL
 
 
 
@@ -32,93 +34,87 @@ public class TaskInertiaGUI extends Application{
         this.projectId = projectId;
         this.authToken = authToken;
         this.endpoint = endpoint;
+        endDate.set(LocalDate.now());
     }
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Task Inertia");
-        // Create DatePickers for startDate and endDate
-        LocalDate projectStartDate = Project.getProjectStartDate(authToken, endpoint, projectId);
-        DatePicker startDatePicker = new DatePicker();
-        startDatePicker.setValue(projectStartDate); 
-        startDatePicker.setDayCellFactory(getDateCellFactory(projectStartDate, LocalDate.now()));
 
-        DatePicker endDatePicker = new DatePicker();
-        endDatePicker.setValue(LocalDate.now()); 
-        endDatePicker.setDayCellFactory(getDateCellFactory(projectStartDate, LocalDate.now()));
-
-        Button btnSubmit = new Button("Submit");
-        btnSubmit.setOnAction(e -> {
-            LocalDate startDate = startDatePicker.getValue();
-            LocalDate endDate = endDatePicker.getValue();
-            TreeMap<LocalDate, Float> taskInertiaMap = TaskInertia.getTaskInertia(projectId, authToken, endpoint, startDate, endDate);
-            displayBarChart(taskInertiaMap, startDate, endDate, primaryStage);
-        });
-
-        // Layout
-        VBox vBox = new VBox(10, startDatePicker, endDatePicker, btnSubmit);
-        vBox.setAlignment(Pos.TOP_CENTER); 
-        vBox.setPadding(new Insets(20, 0, 0, 0));
-
-        // Scene
-        Scene scene = new Scene(vBox, 300, 200);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    private void displayBarChart(TreeMap<LocalDate, Float> taskInertiaMap, LocalDate startDate, LocalDate endDate, Stage stage) {
+        // Initialize DatePickers
+        DatePicker startDatePicker = new DatePicker(LocalDate.now().minusDays(30));
+        DatePicker endDatePicker = new DatePicker(LocalDate.now());
+        startDate.bindBidirectional(startDatePicker.valueProperty());
+        endDate.bindBidirectional(endDatePicker.valueProperty());
+    
+        // Initialize Button
+        Button btnSubmit = new Button("Show Task Inertia");
+        
+        // Bar Chart setup
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Task Inertia (%)");
-
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle("Task Inertia from " + startDate + " to " + endDate);
+        barChart.setTitle("Task Inertia Chart");
+    
+        // Layout
+        VBox layout = new VBox(10, startDatePicker, endDatePicker, btnSubmit, barChart);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+    
+        // Scene setup
+        Scene scene = new Scene(layout, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    
+        // Update chart when button is clicked
+        btnSubmit.setOnAction(e -> updateChartData(barChart));
+    }
+
+    private void updateChartData(BarChart<String, Number> barChart) {
+        LocalDate start = startDate.get();
+        LocalDate end = endDate.get();
+        TreeMap<LocalDate, Float> taskInertiaMap = TaskInertia.getTaskInertia(projectId, authToken, endpoint, start, end);
+    
+        // Clear previous data from the chart
+        barChart.getData().clear();
+    
+        // Assuming CategoryAxis is your X axis
+        CategoryAxis xAxis = (CategoryAxis) barChart.getXAxis();
+        xAxis.getCategories().clear(); // Clear previous categories
+    
+        // Create a new series for the data
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Inertia");
-
+        series.setName("Task Inertia");
+    
+        // Generate a category for every day in the range to ensure even spacing
+        LocalDate currentDate = start;
+        while (!currentDate.isAfter(end)) {
+            String category = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            xAxis.getCategories().add(category); // Add category even if there is no data for this date
+            currentDate = currentDate.plusDays(1);
+        }
+    
+        // Add data points to the series
         taskInertiaMap.forEach((date, inertia) -> {
-            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(date.toString(), inertia);
-            series.getData().add(dataPoint);
-
+            String dateString = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            XYChart.Data<String, Number> data = new XYChart.Data<>(dateString, inertia);
+            series.getData().add(data);
             Tooltip tooltip = new Tooltip(String.format("Inertia: %.2f%%", inertia));
-            Tooltip.install(dataPoint.getNode(), tooltip);
-
-            dataPoint.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            // Install tooltip when the node for this data point is created
+            data.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
                     Tooltip.install(newNode, tooltip);
                 }
             });
         });
-
-        barChart.getData().add(series);
-
-        VBox vBox = new VBox(barChart);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setPadding(new Insets(20));
-
-        Scene scene = new Scene(vBox, 800, 600);
-        stage.setScene(scene);
-    }
-
-
-    private Callback<DatePicker, DateCell> getDateCellFactory(LocalDate minDate, LocalDate maxDate) {
-    return new Callback<>() {
-        @Override
-        public DateCell call(final DatePicker datePicker) {
-            return new DateCell() {
-                @Override
-                public void updateItem(LocalDate item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    // Disable dates before minDate or after maxDate
-                    if (item.isBefore(minDate) || item.isAfter(maxDate)) {
-                        setDisable(true);
-                        setStyle("-fx-background-color: #ffc0cb;"); // Optional: Apply a style (e.g., background color)
-                    }
-                }
-            };
-        }
-    };
-}
     
+        // Add the series to the chart
+        barChart.getData().add(series);
+    }
+    
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
