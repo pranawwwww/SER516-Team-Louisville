@@ -42,6 +42,7 @@ public class CycleTimeGUI extends Application {
     private Label sprintDetails;
     private String slugURL;
     private final StringProperty selectedSprint = new SimpleStringProperty();
+
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
@@ -85,6 +86,7 @@ public class CycleTimeGUI extends Application {
         sprintDetails = new Label(); // Initialize sprintDetails label without text
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         sprintDetails.setVisible(false); // Hide the label initially
+
       
         // Initially hide both selectors
         sprintSelector.setVisible(false);
@@ -122,6 +124,7 @@ public class CycleTimeGUI extends Application {
             } else {
                 sprintDetails.setText("No sprint selected.");
                 sprintDetails.setVisible(true);
+
             }
         });
 
@@ -211,7 +214,6 @@ public class CycleTimeGUI extends Application {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        getSprintData();
         int start_year = Integer.parseInt(firstDate.substring(0, 4));
         int last_year = Integer.parseInt(lastDate.substring(0, 4));
         int start_month = Integer.parseInt(firstDate.substring(5, 7));
