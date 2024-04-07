@@ -1,25 +1,26 @@
 package LeadTime;
+
 import javafx.application.Application;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.AlertPopup;
+import utils.SprintData;
 import utils.SprintSelector;
 import utils.SprintUtils;
+
 import java.time.LocalDate;
-import utils.SprintData;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,23 +29,21 @@ public class LeadTimeGUI extends Application {
 
     private Map<String, Map<String, Object>> dataMap = new HashMap<>();
     private final StackedBarChart<String, Number> stackedBarChart;
-    private int projectID;
-    private String authToken;
-    private String TAIGA_API_ENDPOINT;
-    private String slugURL;
-    private String sprint;
-    private String firstDate;
-    private String lastDate;
-    private Label sprintDetails = new Label();
+    private final IntegerProperty projectID = new SimpleIntegerProperty();
+    private final StringProperty authToken = new SimpleStringProperty();
+    private final StringProperty taigaApiEndpoint = new SimpleStringProperty();
+    private final StringProperty slugURL = new SimpleStringProperty();
+    private final StringProperty sprint = new SimpleStringProperty();
+    private final StringProperty firstDate = new SimpleStringProperty();
+    private final StringProperty lastDate = new SimpleStringProperty();
+    private final Label sprintDetails = new Label();
 
-    public LeadTimeGUI(int projectID,String authToken,String TAIGA_API_ENDPOINT,String slugURL) {
-        if(this.dataMap != null){
-            this.dataMap.clear();
-        }
-        this.projectID = projectID;
-        this.authToken = authToken;
-        this.TAIGA_API_ENDPOINT = TAIGA_API_ENDPOINT;
-        this.slugURL = slugURL;
+    public LeadTimeGUI(int projectID, String authToken, String taigaApiEndpoint, String slugURL) {
+        this.projectID.set(projectID);
+        this.authToken.set(authToken);
+        this.taigaApiEndpoint.set(taigaApiEndpoint);
+        this.slugURL.set(slugURL);
+
         // Create StackedBarChart
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -80,7 +79,7 @@ public class LeadTimeGUI extends Application {
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
-        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+        SprintSelector.selectSprint(authToken.get(), slugURL.get(), sprintSelector);
 
         sprintSelector.setVisible(false);
         startDatePicker.setVisible(false);
@@ -107,12 +106,9 @@ public class LeadTimeGUI extends Application {
         selectBySprintRadio.fire(); // Trigger event to show sprint selector initially
 
         sprintSelector.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            if (selectedSprint != null) {
-                this.sprint = selectedSprint;
-                // Reset dataMap to null when a new sprint is selected
-                this.dataMap = null;
-            }
+            sprint.set(sprintSelector.getValue());
+            // Reset dataMap to null when a new sprint is selected
+            dataMap = null;
         });
 
         Button selectSprintBtn = new Button("Display Chart");
@@ -121,13 +117,13 @@ public class LeadTimeGUI extends Application {
             if (selectBySprintRadio.isSelected()) {
                 String selectedSprint = sprintSelector.getValue();
                 if (selectedSprint != null) {
-                    this.sprint = selectedSprint;
-                    sprintDetails.setText("Data for " + sprint);
+                    sprint.set(selectedSprint);
+                    sprintDetails.setText("Data for " + sprint.get());
                     stackedBarChart.getData().clear();
-                    SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectID, selectedSprint);
-                    firstDate = sprintDetails.getStart_date();
-                    lastDate = sprintDetails.getEnd_date();
-                    this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT, firstDate, lastDate);
+                    SprintData sprintDetails = SprintUtils.getSprintDetails(authToken.get(), taigaApiEndpoint.get(), projectID.get(), selectedSprint);
+                    firstDate.set(sprintDetails.getStart_date());
+                    lastDate.set(sprintDetails.getEnd_date());
+                    dataMap = LeadTime.getLeadTimePerTask(projectID.get(), authToken.get(), taigaApiEndpoint.get(), firstDate.get(), lastDate.get());
                     if (dataMap.isEmpty()) {
                         AlertPopup.showAlert("Error", "No data available for the selected sprint.");
                     } else {
@@ -141,7 +137,7 @@ public class LeadTimeGUI extends Application {
                 LocalDate endDate = endDatePicker.getValue();
                 if (startDate != null && endDate != null) {
                     stackedBarChart.getData().clear();
-                    this.dataMap = LeadTime.getLeadTimePerTask(projectID, authToken, TAIGA_API_ENDPOINT, startDate.toString(), endDate.toString());
+                    dataMap = LeadTime.getLeadTimePerTask(projectID.get(), authToken.get(), taigaApiEndpoint.get(), startDate.toString(), endDate.toString());
                     if (dataMap.isEmpty()) {
                         AlertPopup.showAlert("Error", "No data available for the selected date range.");
                     } else {
@@ -160,7 +156,7 @@ public class LeadTimeGUI extends Application {
         chartBox.setAlignment(Pos.CENTER);
 
         // Create the VBox containing the controls and chartBox
-        VBox controlsAndChartBox = new VBox(10,selectSprintLabel,radioButtons, sprintSelector, startDatePicker, endDatePicker, selectSprintBtn, sprintDetails, chartBox);
+        VBox controlsAndChartBox = new VBox(10, selectSprintLabel, radioButtons, sprintSelector, startDatePicker, endDatePicker, selectSprintBtn, sprintDetails, chartBox);
         controlsAndChartBox.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(controlsAndChartBox, 800, 600);
@@ -185,7 +181,7 @@ public class LeadTimeGUI extends Application {
 
         ObservableList<XYChart.Series<String, Number>> seriesList = FXCollections.observableArrayList();
         try {
-            if(dataMap.isEmpty()){
+            if (dataMap.isEmpty()) {
                 throw new IllegalArgumentException("Sprint has not started");
             }
             for (String taskName : dataMap.keySet()) {
@@ -216,18 +212,17 @@ public class LeadTimeGUI extends Application {
             for (XYChart.Data<String, Number> data : series.getData()) {
                 Map<String, Object> taskData = dataMap.get(series.getName());
                 String taskName = taskData.get("taskName").toString();
-                String userStoryName =  taskData.get("userStoryName").toString();
-                String epicName =  taskData.get("epicName").toString();
+                String userStoryName = taskData.get("userStoryName").toString();
+                String epicName = taskData.get("epicName").toString();
                 String startDate = taskData.get("startDate").toString();
                 String endDate = taskData.get("endDate").toString();
 
-                Tooltip tooltip = new Tooltip( "Epic Name: " + epicName + "\nUS Name: " + userStoryName +  "\nTask Name: "
-                + taskName + "\nStart Date: " + startDate + "\nEnd Date: " + endDate);
+                Tooltip tooltip = new Tooltip("Epic Name: " + epicName + "\nUS Name: " + userStoryName + "\nTask Name: "
+                        + taskName + "\nStart Date: " + startDate + "\nEnd Date: " + endDate);
                 tooltip.setHideOnEscape(true);
                 tooltip.setHideDelay(Duration.seconds(20));
                 Tooltip.install(data.getNode(), tooltip);
             }
         }
     }
-
 }
