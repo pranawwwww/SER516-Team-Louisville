@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,7 +21,7 @@ import javafx.stage.Stage;
 import utils.SprintSelector;
 
 public class TaskChurnGUI extends Application {
-
+    private final StringProperty sprintProperty = new SimpleStringProperty();
     private TreeMap<LocalDate, Float> taskChurnMap = new TreeMap<>();
     private String slugURL;
     private String sprint;
@@ -49,20 +51,7 @@ public class TaskChurnGUI extends Application {
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.getItems().clear();
-        SprintSelector.selectSprint(authToken,slugURL, sprintSelector);
-
-        sprintSelector.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            if (selectedSprint != null) {
-                this.sprint = selectedSprint;
-            }
-        });
-
-        Button displayButton = new Button("Display Chart");
-        displayButton.setDisable(true); // Initially disable the button
-
-        HBox controls = new HBox(10, selectSprintLabel,sprintSelector, displayButton);
-        controls.setAlignment(Pos.CENTER);
+        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
 
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -72,7 +61,7 @@ public class TaskChurnGUI extends Application {
         lineGraph = new LineChart<>(xAxis, yAxis);
         lineGraph.setTitle("Task Churn");
 
-        VBox root = new VBox(10, controls, lineGraph);
+        VBox root = new VBox(10, selectSprintLabel, sprintSelector, lineGraph);
         root.setAlignment(Pos.CENTER); // Center align root
 
         Scene scene = new Scene(root, 800, 600);
@@ -80,19 +69,25 @@ public class TaskChurnGUI extends Application {
         stage.setScene(scene);
         stage.show();
 
-        displayButton.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            if (selectedSprint != null) {
-                this.sprint = selectedSprint;
-                this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, selectedSprint);
+        // Bind the sprintProperty bidirectionally with the selected item of the sprintSelector
+        sprintSelector.valueProperty().bindBidirectional(sprintProperty);
+
+        // Update the line graph whenever the sprint changes
+        sprintProperty.addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, newVal);
                 displayChart();
-            } else {
-                showAlert("Error", "Please select a sprint.");
             }
         });
 
+        // Manually trigger the display of the chart when a sprint is initially selected
         sprintSelector.setOnAction(e -> {
-            displayButton.setDisable(sprintSelector.getValue() == null); // Enable button when sprint is selected
+            String selectedSprint = sprintSelector.getValue();
+            if (selectedSprint != null) {
+                this.sprintProperty.set(selectedSprint);
+                this.taskChurnMap = TaskChurn.calculateTaskChurn(projectID, authToken, taigaApiEndpoint, selectedSprint);
+                displayChart();
+            }
         });
     }
 
@@ -105,7 +100,7 @@ public class TaskChurnGUI extends Application {
             lineGraph.getData().clear(); // Clear previous data
 
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(sprint);
+            series.setName(sprintProperty.get()); // Use sprintProperty instead of 'sprint'
 
             LocalDate startDate = taskChurnMap.firstKey();
             // Add data to the series
@@ -131,6 +126,8 @@ public class TaskChurnGUI extends Application {
             showAlert("Error", "Please Try a Sprint which has been started.");
         }
     }
+
+
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
