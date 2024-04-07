@@ -2,6 +2,8 @@ import org.junit.jupiter.api.Test;
 
 import Authentication.Authentication;
 import LeadTime.LeadTime;
+import utils.SprintData;
+import utils.SprintUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,12 @@ class LeadTimeTest {
         String authToken = Authentication.authenticate("louisville_test", "SER516");
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
 
-        Map<String, Map<String, Object>> input = LeadTime.getLeadTimePerTask(projectId,authToken,TAIGA_API_ENDPOINT, "Sprint 1");
+        SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, TAIGA_API_ENDPOINT, projectId, "Sprint 1");
+
+        String firstDate = sprintDetails.getStart_date();
+        String lastDate = sprintDetails.getEnd_date();
+
+        Map<String, Map<String, Object>> input = LeadTime.getLeadTimePerTask(projectId,authToken,TAIGA_API_ENDPOINT, firstDate,lastDate);
 
         Map<String, Object> expected = new HashMap<>();
         expected.put("userStoryName", "Select a Taiga project to apply this metric to.");
