@@ -17,30 +17,27 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
-import utils.SprintData;
 import utils.SprintSelector;
-import utils.SprintUtils;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class BurndownGUI extends Application {
     private LineChart<String, Number> lineChart;
-    private String sprint;
-    private String slugURL;
-    private String authToken;
-    private Label sprintDetails = new Label("Please select a sprint.");
+    private final StringProperty selectedSprint = new SimpleStringProperty();
+    private final StringProperty sprintDetailsText = new SimpleStringProperty("Please select a sprint.");
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
     private int projectID;
-    // Additional parameters for Taiga API
-    // private final String taigaApiEndpoint;
-    // private final String authToken;
-    // private final String sprintLastDate;
+    private String slugURL;
+    private String authToken;
 
     public BurndownGUI(int projectID, String authToken, String slugURL) {
         this.projectID = projectID;
+        this.selectedSprint.set("");
         this.slugURL = slugURL;
         this.authToken = authToken;
     }
-     
 
     @Override
     public void start(Stage stage) {
@@ -48,8 +45,13 @@ public class BurndownGUI extends Application {
 
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
-        SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+        sprintSelector.valueProperty().bindBidirectional(Burndown.selectedSprintProperty());
+        SprintSelector.selectSprint(this.authToken, this.slugURL, sprintSelector);
+        Label sprintDetails = new Label();
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        // Bind sprintDetails label text to sprintDetailsText property
+        sprintDetails.textProperty().bind(sprintDetailsText);
 
         xAxis = new CategoryAxis();
         yAxis = new NumberAxis();
@@ -59,15 +61,8 @@ public class BurndownGUI extends Application {
         this.lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setLegendVisible(false);
 
-        sprintSelector.setOnAction(e -> {
-            String selectedSprint = sprintSelector.getValue();
-            if (selectedSprint != null) {
-                sprint = selectedSprint;
-                fetchAndDisplayBurndownData(selectedSprint);
-            } else {
-                clearChart();
-            }
-        });
+        // Bind selectedSprint to fetchAndDisplayBurndownData method
+        Burndown.selectedSprintProperty().addListener((obs, oldVal, newVal) -> fetchAndDisplayBurndownData(newVal));
 
         VBox layout = new VBox(10, sprintSelector, sprintDetails, lineChart);
         layout.setAlignment(Pos.CENTER);
@@ -78,15 +73,14 @@ public class BurndownGUI extends Application {
     }
 
     private void fetchAndDisplayBurndownData(String selectedSprint) {
-        List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
-        SprintData stats = SprintUtils.getSprintDetails(authToken, "https://api.taiga.io/api/v1", projectID, selectedSprint);
+        List<BurnDownDataPoint> progress = Burndown.getBurnDownProgress(this.authToken, "https://api.taiga.io/api/v1", this.projectID, selectedSprint);
         Platform.runLater(() -> {
-            if (stats == null || progress == null || progress.isEmpty()) {
+            if (progress == null || progress.isEmpty()) {
                 AlertPopup.showAlert("Error", "No data available for the selected sprint or sprint has not started.");
                 clearChart();
             } else {
                 updateChart(progress);
-                sprintDetails.setText("Data for " + selectedSprint);
+                sprintDetailsText.set("Data for " + selectedSprint);
 
                 // Update the x-axis categories based on the new data
                 List<String> dayLabels = progress.stream()
@@ -100,7 +94,7 @@ public class BurndownGUI extends Application {
 
     private void clearChart() {
         this.lineChart.getData().clear();
-        sprintDetails.setText("Invalid or not started sprint.");
+        sprintDetailsText.set("Invalid or not started sprint.");
     }
 
     private void updateChart(List<BurnDownDataPoint> dataPoints) {
