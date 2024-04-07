@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,50 @@ public class Tasks {
                 }
             }
 
+            return closedTasks;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public static List<JsonNode> getClosedTasksBetweenDates(int projectId, String authToken, String TAIGA_API_ENDPOINT, String startDateStr, String endDateStr){
+        String endpoint = TAIGA_API_ENDPOINT + "/tasks?project=" + projectId;
+        HttpGet request = new HttpGet(endpoint);
+        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authToken);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        List<JsonNode> closedTasks = new ArrayList<>();
+        String responseJson = HTTPRequest.sendHttpRequest(request);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        // Parse the startDateStr and endDateStr to LocalDate
+        LocalDate startDate = LocalDate.parse(startDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endDate = LocalDate.parse(endDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+
+
+
+        try {
+            JsonNode tasksNode = objectMapper.readTree(responseJson);
+
+            for (JsonNode taskNode : tasksNode) {
+                boolean isClosed = taskNode.has("is_closed") && taskNode.get("is_closed").asBoolean();
+                if (isClosed) {
+                    if(taskNode.hasNonNull("finished_date")) {
+                        String finishedDateStr = taskNode.get("finished_date").asText().substring(0, 19);
+                        LocalDate finishedDate = LocalDate.parse(finishedDateStr, formatter);
+
+                        if (finishedDate.isAfter(startDate) && (finishedDate.isBefore(endDate))) {
+                            closedTasks.add(taskNode);
+                        }
+                    }
+                }
+            }
+
+            // Print or use the closed tasks as needed
+            for (JsonNode closedTask : closedTasks) {
+                System.out.println(closedTask);
+            }
             return closedTasks;
 
         } catch (Exception e) {
@@ -242,7 +287,7 @@ public class Tasks {
 
     public static List<JsonNode> getAllTasksInProject(int projectId, String authToken, String TAIGA_API_ENDPOINT) {
         List<String> USIds = UserStoryUtils.getAllUserStoryIdsInProject(projectId, authToken, TAIGA_API_ENDPOINT);
-        
+
         List<JsonNode> tasks = new ArrayList<>();
         for(String usId:USIds){
             String endpoint = TAIGA_API_ENDPOINT + "/tasks?user_story="+usId;
@@ -278,4 +323,5 @@ public class Tasks {
         return allTaskHistory;
     }
 }
+
 

@@ -17,16 +17,16 @@ public class LeadTime {
     
     static Map<String, Map<String, Object>> LeadTimeMap = new HashMap<>();
 
-    public static Map<String, Map<String, Object>> getLeadTimePerTask(int projectId, String authToken, String endpoint, String sprint ) {
+    public static Map<String, Map<String, Object>> getLeadTimePerTask(int projectId, String authToken, String endpoint, String startdate, String enddate ) {
         try{
-            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, endpoint, projectId, sprint);
-            if(sprintDetails == null){
-                throw new IllegalArgumentException("Sprint has not started");   
-            }
+//            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, endpoint, projectId, sprint);
+//            if(sprintDetails == null){
+//                throw new IllegalArgumentException("Sprint has not started");
+//            }
             if(!LeadTimeMap.isEmpty())
                 LeadTimeMap.clear();
-            String firstDate = sprintDetails.getStart_date();
-            String lastDate = sprintDetails.getEnd_date();
+            String firstDate = startdate;
+            String lastDate = enddate;
             int start_year = Integer.parseInt(firstDate.substring(0,4));
             int last_year = Integer.parseInt(lastDate.substring(0,4));
             int start_month = Integer.parseInt(firstDate.substring(5,7));
@@ -35,7 +35,7 @@ public class LeadTime {
             int last_date = Integer.parseInt(lastDate.substring(8));
             LocalDateTime startDate = LocalDate.of(start_year, start_month, start_date).atTime(00, 00, 00);
             LocalDateTime endDate = LocalDate.of(last_year, last_month, last_date).atTime(00, 00, 00);
-            List<JsonNode> closedTasks = Tasks.getClosedTasks(projectId, authToken, endpoint,sprint);
+            List<JsonNode> closedTasks = Tasks.getClosedTasksBetweenDates(projectId, authToken, endpoint,startdate,enddate);
     
             for (JsonNode task : closedTasks) {
                 Map<String, Object> data = new HashMap<>();
