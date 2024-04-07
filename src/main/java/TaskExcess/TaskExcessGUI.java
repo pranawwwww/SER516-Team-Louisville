@@ -3,6 +3,8 @@ package TaskExcess;
 import java.util.NoSuchElementException;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -31,10 +33,13 @@ public class TaskExcessGUI extends Application {
     private String sprint;
     private PieChart pieChart;
     private ComboBox<String> sprintSelector;
+    private final StringProperty selectedSprint = new SimpleStringProperty();
+    private final StringProperty sprintDetailsText = new SimpleStringProperty("Please select a sprint.");
 
     public TaskExcessGUI(String authToken, String taigaApiEndpoint, int projectID, String slugURL){
         this.slugURL = slugURL;
         this.projectId = projectID;
+        this.selectedSprint.set("");
         this.authToken = authToken;
         this.TAIGA_API_ENDPOINT = taigaApiEndpoint;
     }
@@ -44,14 +49,15 @@ public class TaskExcessGUI extends Application {
         try{
             stage.setTitle("Task Excess");
 
-            Label selectSprintLabel = new Label("Select a sprint ");
-            selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
             // Create sprint selector
             sprintSelector = new ComboBox<>();
             sprintSelector.setPromptText("select a sprint");
             sprintSelector.getItems().clear();
+            sprintSelector.valueProperty().bindBidirectional(TaskExcess.selectedSprintProperty());
             SprintSelector.selectSprint(authToken,slugURL, sprintSelector);
+            Label selectSprintLabel = new Label("Select a sprint ");
+            selectSprintLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            selectSprintLabel.textProperty().bind(sprintDetailsText);
 
             // Button to display chart
             Button displayChartBtn = new Button("Display Chart");
