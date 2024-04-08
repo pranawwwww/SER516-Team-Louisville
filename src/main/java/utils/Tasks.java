@@ -76,7 +76,7 @@ public class Tasks {
                         String finishedDateStr = taskNode.get("finished_date").asText().substring(0, 19);
                         LocalDate finishedDate = LocalDate.parse(finishedDateStr, formatter);
 
-                        if (finishedDate.isAfter(startDate) && (finishedDate.isBefore(endDate))) {
+                        if ((finishedDate.isAfter(startDate) || finishedDate.isEqual(startDate)) && (finishedDate.isBefore(endDate) || finishedDate.isEqual(endDate))) {
                             closedTasks.add(taskNode);
                         }
                     }

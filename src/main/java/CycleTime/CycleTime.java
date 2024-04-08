@@ -31,7 +31,7 @@ public class CycleTime {
         Map<String, List<Pair<String, Integer>>> cycleTime = calculateAndPrintCycleTime(tasks,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Pair<String, Integer>>> sortedCycleTime = new TreeMap<>(cycleTime);
         Map<String, List<Pair<String, Integer>>> orderedCycleTime = new LinkedHashMap<>(sortedCycleTime);
-
+        System.out.println(orderedCycleTime);
         return orderedCycleTime;
     }
     public static Map<String, List<Pair<String, Integer>>> getMatrixDataBetweenTwoDates(int projectId, String authToken, String TAIGA_API_ENDPOINT,String startDate, String endDate){
@@ -39,7 +39,7 @@ public class CycleTime {
         Map<String, List<Pair<String, Integer>>> cycleTime = calculateAndPrintCycleTime(tasks,authToken,TAIGA_API_ENDPOINT);
         Map<String, List<Pair<String, Integer>>> sortedCycleTime = new TreeMap<>(cycleTime);
         Map<String, List<Pair<String, Integer>>> orderedCycleTime = new LinkedHashMap<>(sortedCycleTime);
-
+        System.out.println(orderedCycleTime);
         return orderedCycleTime;
     }
 
