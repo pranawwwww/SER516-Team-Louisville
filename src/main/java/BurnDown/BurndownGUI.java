@@ -115,6 +115,7 @@ public class BurndownGUI extends Application {
         sprintDetailsText.set("Invalid or not started sprint.");
     }
 
+    @SuppressWarnings("unchecked")
     private void updateChart(List<BurnDownDataPoint> dataPoints) {
         // this.lineChart.getData().clear();
 

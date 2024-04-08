@@ -25,12 +25,8 @@ public class CycleTimeGUI extends Application {
 
     private int projectID;
     private String authToken;
-    private String TAIGA_API_ENDPOINT;
     private String firstDate;
     private String lastDate;
-    private TextField sprintInput;
-    private ComboBox<String> sprintComboBox;
-    private Button displayButton;
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
     private ScatterChart<String, Number> scatterChart;
@@ -42,6 +38,7 @@ public class CycleTimeGUI extends Application {
     private Label sprintDetails;
     private String slugURL;
     private final StringProperty selectedSprint = new SimpleStringProperty();
+
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
@@ -49,10 +46,6 @@ public class CycleTimeGUI extends Application {
         this.projectID = projectID;
         this.authToken = authToken;
         this.slugURL = slug;
-    }
-
-    public static void main(String[] args) {
-//        launch(args);
     }
 
     @Override
@@ -85,6 +78,7 @@ public class CycleTimeGUI extends Application {
         sprintDetails = new Label(); // Initialize sprintDetails label without text
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         sprintDetails.setVisible(false); // Hide the label initially
+
       
         // Initially hide both selectors
         sprintSelector.setVisible(false);
@@ -122,6 +116,7 @@ public class CycleTimeGUI extends Application {
             } else {
                 sprintDetails.setText("No sprint selected.");
                 sprintDetails.setVisible(true);
+
             }
         });
 
@@ -198,6 +193,7 @@ public class CycleTimeGUI extends Application {
                     } else {
                         firstDate = selectedStartDate.format(dateFormatter);
                         lastDate = selectedEndDate.format(dateFormatter);
+                        System.out.println(firstDate+" "+lastDate);
                         displayChart();
                     }
                 } else {
@@ -208,54 +204,102 @@ public class CycleTimeGUI extends Application {
     }
     private void displayChart() {
         scatterChart.getData().clear();
+        if(selectedSprint.get() != null) {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            int start_year = Integer.parseInt(firstDate.substring(0, 4));
+            int last_year = Integer.parseInt(lastDate.substring(0, 4));
+            int start_month = Integer.parseInt(firstDate.substring(5, 7));
+            int last_month = Integer.parseInt(lastDate.substring(5, 7));
+            int start_date = Integer.parseInt(firstDate.substring(8));
+            int last_date = Integer.parseInt(lastDate.substring(8));
 
-        getSprintData();
-        int start_year = Integer.parseInt(firstDate.substring(0, 4));
-        int last_year = Integer.parseInt(lastDate.substring(0, 4));
-        int start_month = Integer.parseInt(firstDate.substring(5, 7));
-        int last_month = Integer.parseInt(lastDate.substring(5, 7));
-        int start_date = Integer.parseInt(firstDate.substring(8));
-        int last_date = Integer.parseInt(lastDate.substring(8));
+            LocalDate startDate = LocalDate.of(start_year, start_month, start_date);
+            LocalDate endDate = LocalDate.of(last_year, last_month, last_date);
 
-        LocalDate startDate = LocalDate.of(start_year, start_month, start_date);
-        LocalDate endDate = LocalDate.of(last_year, last_month, last_date);
-
-        ObservableList<String> dateList = FXCollections.observableArrayList();
-        LocalDate currentDate = startDate;
-        while (!currentDate.isAfter(endDate)) {
-            dateList.add(currentDate.format(dateFormatter));
-            currentDate = currentDate.plusDays(1);
-        }
-
-        xAxis.setCategories(FXCollections.observableArrayList(dateList));
-        xAxis.setTickLabelRotation(90);
-
-        String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
-        Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken, TAIGA_API_ENDPOINT, selectedSprint.get());
-
-        computeCycleTime = 0.0f;
-        numberTaskCompleted = 0;
-        for (Map.Entry<String, List<Pair<String, Integer>>> entry : orderedCycleTime.entrySet()) {
-            String key = entry.getKey();
-            List<Pair<String, Integer>> pairs = entry.getValue();
-            for (Pair<String, Integer> pair : pairs) {
-                String subject = pair.getLeft(); // Extracting subject from Pair
-                Integer value = pair.getRight(); // Extracting integer value from Pair
-                computeCycleTime += value;
-                ++numberTaskCompleted;
-                XYChart.Series<String, Number> dataPoint = new XYChart.Series<>();
-                XYChart.Data<String, Number> data = new XYChart.Data<>(key, (Number) value);
-                dataPoint.getData().add(data);
-                scatterChart.getData().add(dataPoint);
-                Tooltip tooltip = new Tooltip(subject);
-                Tooltip.install(data.getNode(), tooltip);
+            ObservableList<String> dateList = FXCollections.observableArrayList();
+            LocalDate currentDate = startDate;
+            while (!currentDate.isAfter(endDate)) {
+                dateList.add(currentDate.format(dateFormatter));
+                currentDate = currentDate.plusDays(1);
             }
+
+            xAxis.setCategories(FXCollections.observableArrayList(dateList));
+            xAxis.setTickLabelRotation(90);
+
+            String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+            Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixData(projectID, authToken, TAIGA_API_ENDPOINT, selectedSprint.get());
+
+            computeCycleTime = 0.0f;
+            numberTaskCompleted = 0;
+            for (Map.Entry<String, List<Pair<String, Integer>>> entry : orderedCycleTime.entrySet()) {
+                String key = entry.getKey();
+                List<Pair<String, Integer>> pairs = entry.getValue();
+                for (Pair<String, Integer> pair : pairs) {
+                    String subject = pair.getLeft(); // Extracting subject from Pair
+                    Integer value = pair.getRight(); // Extracting integer value from Pair
+                    computeCycleTime += value;
+                    ++numberTaskCompleted;
+                    XYChart.Series<String, Number> dataPoint = new XYChart.Series<>();
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(key, (Number) value);
+                    dataPoint.getData().add(data);
+                    scatterChart.getData().add(dataPoint);
+                    Tooltip tooltip = new Tooltip(subject);
+                    Tooltip.install(data.getNode(), tooltip);
+                }
+            }
+            computeCycleTime /= numberTaskCompleted;
+            valueCycleTime.setText(String.format("%.2f", computeCycleTime));
+            valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
         }
-        computeCycleTime /= numberTaskCompleted;
-        valueCycleTime.setText(String.format("%.2f", computeCycleTime));
-        valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
+        else if(firstDate != null && lastDate != null){
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            int start_year = Integer.parseInt(firstDate.substring(0, 4));
+            int last_year = Integer.parseInt(lastDate.substring(0, 4));
+            int start_month = Integer.parseInt(firstDate.substring(5, 7));
+            int last_month = Integer.parseInt(lastDate.substring(5, 7));
+            int start_date = Integer.parseInt(firstDate.substring(8));
+            int last_date = Integer.parseInt(lastDate.substring(8));
+
+            LocalDate startDate = LocalDate.of(start_year, start_month, start_date);
+            LocalDate endDate = LocalDate.of(last_year, last_month, last_date);
+
+            ObservableList<String> dateList = FXCollections.observableArrayList();
+            LocalDate currentDate = startDate;
+            while (!currentDate.isAfter(endDate)) {
+                dateList.add(currentDate.format(dateFormatter));
+                currentDate = currentDate.plusDays(1);
+            }
+
+            xAxis.setCategories(FXCollections.observableArrayList(dateList));
+            xAxis.setTickLabelRotation(90);
+
+            String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";
+            Map<String, List<Pair<String, Integer>>> orderedCycleTime = CycleTime.getMatrixDataBetweenTwoDates(projectID, authToken, TAIGA_API_ENDPOINT, firstDate, lastDate);
+
+            computeCycleTime = 0.0f;
+            numberTaskCompleted = 0;
+            for (Map.Entry<String, List<Pair<String, Integer>>> entry : orderedCycleTime.entrySet()) {
+                String key = entry.getKey();
+                List<Pair<String, Integer>> pairs = entry.getValue();
+                for (Pair<String, Integer> pair : pairs) {
+                    String subject = pair.getLeft(); // Extracting subject from Pair
+                    Integer value = pair.getRight(); // Extracting integer value from Pair
+                    computeCycleTime += value;
+                    ++numberTaskCompleted;
+                    XYChart.Series<String, Number> dataPoint = new XYChart.Series<>();
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(key, (Number) value);
+                    dataPoint.getData().add(data);
+                    scatterChart.getData().add(dataPoint);
+                    Tooltip tooltip = new Tooltip(subject);
+                    Tooltip.install(data.getNode(), tooltip);
+                }
+            }
+            computeCycleTime /= numberTaskCompleted;
+            valueCycleTime.setText(String.format("%.2f", computeCycleTime));
+            valueTaskCompleted.setText(String.valueOf(numberTaskCompleted));
+        }
     }
     private void getSprintData(String selectedSprint) {
         String TAIGA_API_ENDPOINT = "https://api.taiga.io/api/v1";

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import Authentication.Authentication;
 import TaskInertia.TaskInertia;
-import utils.Project;
 
 public class TaskInertiaTest {
 

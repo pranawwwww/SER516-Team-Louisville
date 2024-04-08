@@ -6,9 +6,7 @@ import javafx.beans.property.StringProperty;
 import utils.SprintData;
 import utils.SprintUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
