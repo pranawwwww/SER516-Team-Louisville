@@ -16,26 +16,8 @@ public class Project {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    private static String promptUser(String prompt) {
-        System.out.print(prompt);
-        return scanner.nextLine();
-    }
-
-    private static String promptUserPassword(String prompt) {
-        if (System.console() != null) {
-            char[] passwordChars = System.console().readPassword(prompt);
-            return new String(passwordChars);
-        } else {
-            System.out.print(prompt);
-            return scanner.nextLine();
-        }
-    }
 
     public static int getProjectId(String authToken,String TAIGA_API_ENDPOINT,String projectSlug) {
-
-        // Prompting user to enter project slug name. A slug name is nothing but an identifier for a project.
-        // Open any Taiga project and check the url of your browser. Slug name is the value after " /project/SLUG_NAME "
-        // Example https://tree.taiga.io/project/SLUG_NAME/us/1?no-milestone=1
 
         String endpoint = TAIGA_API_ENDPOINT + "/projects/by_slug?slug=" + projectSlug;
 

@@ -25,12 +25,8 @@ public class CycleTimeGUI extends Application {
 
     private int projectID;
     private String authToken;
-    private String TAIGA_API_ENDPOINT;
     private String firstDate;
     private String lastDate;
-    private TextField sprintInput;
-    private ComboBox<String> sprintComboBox;
-    private Button displayButton;
     private CategoryAxis xAxis;
     private NumberAxis yAxis;
     private ScatterChart<String, Number> scatterChart;
@@ -50,10 +46,6 @@ public class CycleTimeGUI extends Application {
         this.projectID = projectID;
         this.authToken = authToken;
         this.slugURL = slug;
-    }
-
-    public static void main(String[] args) {
-//        launch(args);
     }
 
     @Override

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import utils.SprintData;
-import utils.SprintUtils;
 import utils.Tasks;
 
 public class LeadTime {
@@ -19,10 +16,6 @@ public class LeadTime {
 
     public static Map<String, Map<String, Object>> getLeadTimePerTask(int projectId, String authToken, String endpoint, String startdate, String enddate ) {
         try{
-//            SprintData sprintDetails = SprintUtils.getSprintDetails(authToken, endpoint, projectId, sprint);
-//            if(sprintDetails == null){
-//                throw new IllegalArgumentException("Sprint has not started");
-//            }
             if(!LeadTimeMap.isEmpty())
                 LeadTimeMap.clear();
             String firstDate = startdate;
