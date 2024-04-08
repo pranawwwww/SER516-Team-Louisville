@@ -48,15 +48,15 @@ public class BurndownGUI extends Application {
     public void start(Stage stage) {
         stage.setTitle("Burndown Chart");
 
-        // ComboBox<String> sprintSelector = new ComboBox<>();
-        // sprintSelector.setPromptText("select a sprint");
-        // SprintSelector.selectSprint(authToken, slugURL, sprintSelector);
+        ComboBox<String> sprintSelector = new ComboBox<>();
+        sprintSelector.setPromptText("select a sprint");
+        sprintSelector.valueProperty().bindBidirectional(Burndown.selectedSprintProperty());
+        SprintSelector.selectSprint(this.authToken, this.slugURL, sprintSelector);
+        Label sprintDetails = new Label();
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        //Needs to be modified
-        ListView<String> sprintSelector = new ListView<>();
-        sprintSelector.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SprintSelector.selectSprint(authToken, slugURL, sprintSelector); // This method needs to be adapted to populate
-                                                                         // the ListView
+
+        // Bind sprintDetails label text to sprintDetailsText property
+        sprintDetails.textProperty().bind(sprintDetailsText);
 
         xAxis = new CategoryAxis();
         yAxis = new NumberAxis();
@@ -66,27 +66,8 @@ public class BurndownGUI extends Application {
         this.lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setLegendVisible(false);
 
-        // sprintSelector.setOnAction(e -> {
-        // String selectedSprint = sprintSelector.getValue();
-        // if (selectedSprint != null) {
-        // sprint = selectedSprint;
-        // fetchAndDisplayBurndownData(selectedSprint);
-        // } else {
-        // clearChart();
-        // }
-        // });
-
-        
-
-        // Replace the setOnAction with a listener that supports multiple selections
-        sprintSelector.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            List<String> selectedSprints = sprintSelector.getSelectionModel().getSelectedItems();
-            if (selectedSprints != null && !selectedSprints.isEmpty()) {
-                fetchAndDisplayBurndownData(selectedSprints);
-            } else {
-                clearChart();
-            }
-        });
+        // Bind selectedSprint to fetchAndDisplayBurndownData method
+        Burndown.selectedSprintProperty().addListener((obs, oldVal, newVal) -> fetchAndDisplayBurndownData(newVal));
 
         VBox layout = new VBox(10, sprintSelector, sprintDetails, lineChart);
         layout.setAlignment(Pos.CENTER);
