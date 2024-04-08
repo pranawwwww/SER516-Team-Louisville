@@ -46,6 +46,24 @@ public class BurndownGUI extends Application {
         ComboBox<String> sprintSelector = new ComboBox<>();
         sprintSelector.setPromptText("select a sprint");
         sprintSelector.valueProperty().bindBidirectional(Burndown.selectedSprintProperty());
+
+        sprintSelector.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                fetchAndDisplayBurndownData(newVal);
+                // // Fetch data for the selected sprint
+                // List<BurnDownDataPoint> dataPoints = Burndown.getBurnDownProgress(this.authToken, "https://api.taiga.io/api/v1", this.projectID, newVal); 
+        
+                // // Convert data points into a Series and add it to the chart
+                // XYChart.Series<String, Number> series = new XYChart.Series<>();
+                // series.setName(newVal); // Set the series name to the sprint name
+                
+                // for (BurnDownDataPoint point : dataPoints) {
+                //     series.getData().add(new XYChart.Data<>(point.getDay(), point.getOpenPoints(),point.getOptimalPoints()));
+                // }
+        
+                // this.lineChart.getData().add(series);
+            }
+        });
         SprintSelector.selectSprint(this.authToken, this.slugURL, sprintSelector);
         Label sprintDetails = new Label();
         sprintDetails.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -98,7 +116,7 @@ public class BurndownGUI extends Application {
     }
 
     private void updateChart(List<BurnDownDataPoint> dataPoints) {
-        this.lineChart.getData().clear();
+        // this.lineChart.getData().clear();
 
         XYChart.Series<String, Number> openPointsSeries = new XYChart.Series<>();
         openPointsSeries.setName("Open Points");
