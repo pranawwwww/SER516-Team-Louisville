@@ -148,8 +148,4 @@ public class TaskExcessGUI extends Application {
 
         valueTE.setText(String.format("%.2f", this.taskExcessRatio));
     }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

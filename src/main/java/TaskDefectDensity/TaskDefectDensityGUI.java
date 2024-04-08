@@ -1,7 +1,5 @@
 package TaskDefectDensity;
 
-import java.util.NoSuchElementException;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,18 +13,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.AlertPopup;
-import utils.DisplayPage;
 import utils.SprintSelector;
 
-import static utils.DisplayPage.projectID;
 
 public class TaskDefectDensityGUI extends Application {
-    private int numberOfDeletedTasks;
-    private int numberOfUnfinishedTasks;
-    private int numberOfTotalTasks;
-    private double taskDefectDensity;
     private Label valueTDD;
-    private boolean validSprint;
     private String slugURL;
     private String authToken;
     private String sprint;

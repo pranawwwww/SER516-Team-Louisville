@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class TaskInertiaGUI extends Application {
@@ -113,8 +112,4 @@ public class TaskInertiaGUI extends Application {
         barChart.getData().add(series);
     }
     
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

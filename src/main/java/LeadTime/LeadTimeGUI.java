@@ -201,7 +201,7 @@ public class LeadTimeGUI extends Application {
             seriesList.sort(Comparator.comparing(series -> Double.parseDouble(series.getData().get(0).getXValue())));
 
         } catch (Exception e) {
-//            AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
+          // AlertPopup.showAlert("Error", "Please Try a Sprint which has been started.");
         }
 
         return seriesList;

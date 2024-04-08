@@ -15,7 +15,6 @@ import javafx.application.Application;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.SprintSelector;
@@ -24,7 +23,6 @@ public class TaskChurnGUI extends Application {
     private final StringProperty sprintProperty = new SimpleStringProperty();
     private TreeMap<LocalDate, Float> taskChurnMap = new TreeMap<>();
     private String slugURL;
-    private String sprint;
     private int projectID;
     private String authToken;
     private String taigaApiEndpoint;
